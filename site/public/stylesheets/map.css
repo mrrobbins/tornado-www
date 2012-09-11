@@ -1,5 +1,8 @@
 
 html { height: 100%; }
-body { height: 100%; margin: 0; padding: 0;}
+body { height: 100%; margin: 0; padding: 0; }
 #map_canvas { height: 100%; }
-#location_form { height: 100%; float: left}
+h3 { color: black; text-align: center; }
+#address_panel { height: 100%; float: left; width: 20em; color: blue; }
+#address_form { text-align: center; }
+

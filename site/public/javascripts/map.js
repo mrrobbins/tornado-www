@@ -1,16 +1,65 @@
 var map;
 
-function initialize() {
+function initialize(elementId) {
 	var mapOptions = {
 		mapTypeId: google.maps.MapTypeId.ROADMAP
 	};
-	map = new google.maps.Map(document.getElementById("map_canvas"),
+	map = new google.maps.Map(document.getElementById(elementId),
 			mapOptions);
-	moveMapToAddress("United States", 5);
+	geocodeAddress("United States", centerAndZoomCallback(5));
 }
 
-function moveMapToAddress(anAddress, zoom) {
-	function geocodeResponse(results, state) {
+function geocodeAddressForm(addressId, resultAreaId) {
+	function processResult(result, state) {
+		centerAndZoomCallback(12)(result, state);
+
+		var resultArea = document.getElementById(resultAreaId);
+		while (resultArea.hasChildNodes()) {
+			resultArea.removeChild(resultArea.lastChild);
+		}
+
+		var resultList = document.createElement("ol");
+
+		for (i in result) {
+			var item = document.createElement("li");
+			var line = result[i].formatted_address;
+			var anchor = document.createElement("a");
+
+			anchor.appendChild(document.createTextNode(line));
+			anchor.setAttribute("href", "javascript:void(0)");
+			var onClickAction = "centerAndZoomMap(" + result[i].geometry.location.lat() + ", " + result[i].geometry.location.lng() + ", 12)";
+			anchor.setAttribute("onclick", onClickAction);
+
+			item.appendChild(anchor);
+
+			resultList.appendChild(item);
+		}
+
+		resultArea.appendChild(resultList);
+	}
+
+	var address = document.getElementById(addressId).value;
+	if (address.length != 0) {
+		geocodeAddress(address, processResult);
+	} else {
+		alert("Please enter a location");
+	}
+
+	return false;
+}
+
+
+function geocodeAddress(anAddress, callback) {
+	var Geocoder = new google.maps.Geocoder()
+	var request = {
+		address: anAddress
+	};
+
+	Geocoder.geocode(request, callback)
+}
+
+function centerAndZoomCallback(zoom) {
+	return function (results, state) {
 		console.log("State:" + state);
 		console.log(results);
 
@@ -22,13 +71,10 @@ function moveMapToAddress(anAddress, zoom) {
 			alert("Location not found: " + anAddress)
 		}
 	}
-
-	var Geocoder = new google.maps.Geocoder()
-	var request = {
-		address: anAddress
-	};
-
-	Geocoder.geocode(request, geocodeResponse)
 }
 
-
+function centerAndZoomMap(lat, lng, zoom)
+{
+	map.setCenter(new google.maps.LatLng(lat, lng));
+	map.setZoom(zoom);
+}

@@ -9,14 +9,16 @@
 	<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCRAwWsAJ4AolCZHLze4SmLubVO1fffTU8&sensor=false"></script>
 	<script type="text/javascript" src="assets/javascripts/map.js"></script>
 </head>
-	<body onload="initialize()">
-		<div id="location_form">
-		<form onsubmit="moveMapToAddress(document.getElementById('address').value, 12); return false;">
-			<input type="text" id="address" />
-			<input type="submit" value="Go" />
-		</form>
+	<body onload="initialize('map_canvas')">
+		<div id="address_panel">
+			<h3>Search a location</h3>
+			<form id="address_form" onsubmit="return geocodeAddressForm('address', 'geocode_result');">
+				<input type="text" id="address" />
+				<input type="submit" value="Go" />
+			</form>
+			<div id="geocode_result"></div>
 		</div>
-		<div id="map_canvas" />
+		<div id="map_canvas"></div>
 	</body>
 </html>
 
