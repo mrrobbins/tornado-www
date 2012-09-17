@@ -1,5 +1,7 @@
 var map;
 var selectResult; //holds result set state, takes new item selection index
+var removeMarker = function () {};
+var markerLists = {};
 
 function initialize(elementId) {
 	var mapOptions = {
@@ -11,8 +13,11 @@ function initialize(elementId) {
 
 function geocodeAddressForm(addressId, resultAreaId) {
 	function processResult(result, state) {
-		centerAndZoomCallback(12)(result, state);
-		buildResultList(result, resultAreaId, 0);
+		if (state == google.maps.GeocoderStatus.OK) {
+			buildResultList(result, resultAreaId, 0);
+		} else {
+			alert("Search returned no results!")
+		}
 	}
 
 	var address = document.getElementById(addressId).value;
@@ -25,7 +30,35 @@ function geocodeAddressForm(addressId, resultAreaId) {
 	return false;
 }
 
-function buildResultList(result, resultAreaId, selectionIndex) {
+function makeMarker(group, latLng, title) {
+	var marker = new google.maps.Marker({
+		position: latLng,
+		title: title
+	});
+
+	marker.setMap(map);
+
+	if (markerLists[group] == undefined) {
+		markerLists[group] = [marker];
+	} else {
+		markerLists[group].push(marker);
+	}
+}
+
+function hideMarkerGroup(group) {
+	for (i in markerLists[group]) {
+		console.log(markerLists[group][i])
+		markerLists[group][i].setMap(null);
+	}
+}
+
+function showMarkerGroup(group) {
+	for (i in markerLists[group]) {
+		markerLists[group][i].setMap(map);
+	}
+}
+
+function  buildResultList(result, resultAreaId, selectionIndex) {
 	var resultArea = document.getElementById(resultAreaId);
 	while (resultArea.hasChildNodes()) {
 		resultArea.removeChild(resultArea.lastChild);
@@ -57,10 +90,16 @@ function buildResultList(result, resultAreaId, selectionIndex) {
 
 	resultArea.appendChild(resultList);
 
+	if (selectionIndex != undefined) {
+		var latLng = result[selectionIndex].geometry.location;
+		map.setCenter(latLng);
+		map.setZoom(8);
+		hideMarkerGroup("default");
+		makeMarker("default", latLng, result[selectionIndex].formatted_address);
+	}
+
 	selectResult = function (selectionIndex) { 
 		buildResultList(result, resultAreaId, selectionIndex); 
-		map.setCenter(result[selectionIndex].geometry.location);
-		map.setZoom(12);
 	};
 }
 
@@ -75,21 +114,9 @@ function geocodeAddress(anAddress, callback) {
 
 function centerAndZoomCallback(zoom) {
 	return function (results, state) {
-		console.log("State:" + state);
-		console.log(results);
-
-		if (state == google.maps.GeocoderStatus.OK) {
-			var latLng = results[0].geometry.location;
-			map.setCenter(latLng)
-			map.setZoom(zoom)
-		} else {
-			alert("Search returned no results!")
-		}
+		var latLng = results[0].geometry.location;
+		map.setCenter(latLng);
+		map.setZoom(zoom);
 	}
-}
-
-function selectResult(selection) {
-	centerAndZoomMap(lat, lng, 12);
-	buildListResult(selection);
 }
 
