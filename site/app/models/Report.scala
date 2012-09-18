@@ -6,7 +6,7 @@ import play.api.db.DB
 import play.api.Play.current
 
 case class Report(
-	id: Option[Int],
+	id: Option[Long],
 	latitude: Double,
 	longitude: Double,
 	address: String,
