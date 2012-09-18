@@ -3,6 +3,7 @@ html { height: 100%; }
 body { height: 100%; margin: 0; padding: 0; }
 #map_canvas { height: 100%; }
 h3 { color: black; text-align: center; }
-#address_panel { height: 100%; float: left; width: 20em; color: blue; }
-#address_form { text-align: center; }
+#address_panel { height: 100%; float: left; width: 20em; }
+#address_form { text-align: center; color: blue }
+#report_form label { text-align: center; color: black }
 
