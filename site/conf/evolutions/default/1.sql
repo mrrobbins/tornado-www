@@ -9,7 +9,6 @@ CREATE TABLE report (
 	address VARCHAR(1024) NOT NULL,
 	location_description VARCHAR(1024) NOT NULL,
 	notes VARCHAR(10240) NOT NULL,
-	uploaded BOOLEAN NOT NULL, -- Whether the report has been uploaded
 	damage_indicator INTEGER NOT NULL,
 	degree_of_damage INTEGER NOT NULL
 );
