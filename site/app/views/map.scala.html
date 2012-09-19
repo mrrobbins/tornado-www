@@ -12,10 +12,9 @@
 	</head>
 	<body onload="initialize('map_canvas')" class="fill">
 		<div id="address_panel" class="fill">
-			<h3>Search a location</h3>
 			<form id="address_form" onsubmit="return geocodeAddressForm('address', 'geocode_result');" class="form-search">
 				<div class="input-append">
-					<input type="text" id="address" class="span2 search-query" />
+					<input type="text" id="address" class="span2 search-query" placeholder="Enter a location" />
 					<input type="submit" value="Search" class="btn" />
 				</div>
 			</form>

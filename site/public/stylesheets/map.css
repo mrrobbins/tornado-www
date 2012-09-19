@@ -1,5 +1,5 @@
 
 body, html { height: 100%; width: 100%; }
 .fill {height: 100%; }
-#address_panel { padding-left: 1em; padding-right: 0.5em; float: left; }
+#address_panel { padding-left: 1em; padding-right: 0.5em; padding-top: 1em; float: left; }
 
