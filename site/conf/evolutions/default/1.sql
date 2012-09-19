@@ -3,27 +3,27 @@
 CREATE TABLE report (
 	id INTEGER PRIMARY KEY,
 	picture_path VARCHAR(1024),
-	time INTEGER, -- UNIX time
-	latitude DOUBLE,
-	longitude DOUBLE,
-	address varchar(1024),
-	location_description varchar(1024),
-	notes varchar(10240),
-	uploaded INTEGER, -- Boolean: whether the report has been uploaded
-	damage_indicator INTEGER,
-	degree_of_damage INTEGER
+	time INTEGER NOT NULL, -- UNIX time
+	latitude DOUBLE NOT NULL,
+	longitude DOUBLE NOT NULL,
+	address VARCHAR(1024) NOT NULL,
+	location_description VARCHAR(1024) NOT NULL,
+	notes VARCHAR(10240) NOT NULL,
+	uploaded BOOLEAN NOT NULL, -- Whether the report has been uploaded
+	damage_indicator INTEGER NOT NULL,
+	degree_of_damage INTEGER NOT NULL
 );
 
 CREATE TABLE tornado_damage_indicator (
 	indicator_number INTEGER PRIMARY KEY,
-	description varchar(1024),
-	abbreviation varchar(16) UNIQUE
+	description VARCHAR(1024),
+	abbreviation VARCHAR(16) UNIQUE
 );
 
 CREATE TABLE tornado_degree_of_damage (
 	degree_number INTEGER,
-	indicator_abbreviation varchar(16),
-	description varchar(1024),
+	indicator_abbreviation VARCHAR(16),
+	description VARCHAR(1024),
 	lowest_windspeed INTEGER,
 	expected_windspeed INTEGER,
 	highest_windspeed INTEGER,
