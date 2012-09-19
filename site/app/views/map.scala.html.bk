@@ -1,0 +1,40 @@
+@()
+
+<!DOCTYPE html>
+<html>
+  <head>   
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="assets/stylesheets/bootstrap.css" />
+    <link rel="stylesheet" href="assets/stylesheets/map.css" />
+    <title>View a location on a map!</title>
+    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCRAwWsAJ4AolCZHLze4SmLubVO1fffTU8&sensor=false"></script>
+    <script type="text/javascript" src="assets/javascripts/map.js"></script>
+	</head>
+	<body onload="initialize('map_canvas')">
+		<div class="row-fluid fill">
+			<div class="span3 offset1">
+				<div class="row-fluid">
+					<div class="span12">
+						<div id="address_panel">
+							<h3>Search a location</h3>
+							<form id="address_form" onsubmit="return geocodeAddressForm('address', 'geocode_result');">
+								<input type="text" id="address" />
+								<input type="submit" value="Go" />
+							</form>
+						</div>
+					</div>
+				</div>
+				<div class="row-fluid">
+					<div id="geocode_result" class="span12"></div>
+				</div>
+				<div class="row-fluid">
+					<div id="report_form" class="span12">@views.html.createReport()</div>
+				</div>
+			</div>
+			<div class="span8 fill">
+				<div id="map_canvas" class="fill"></div>
+			</div>
+		</div>
+	</body>
+</html>
+

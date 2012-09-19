@@ -1,6 +1,7 @@
 @()
 
 @import controllers.Api.reportForm
+@import helper.twitterBootstrap._
 
 @helper.form(action = routes.Api.createReport) {
 
@@ -11,5 +12,5 @@
 	@helper.inputText(reportForm("location_description"), '_label -> "Location description")
 	@helper.inputText(reportForm("notes"), '_label -> "Notes")
 
-	<input type="submit" value="Save" />
+	<input type="submit" value="Save" class="btn-primary" />
 }

@@ -2,24 +2,27 @@
 
 <!DOCTYPE html>
 <html>
-<head>   
-	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-    <link rel="stylesheet" href="assets/stylesheets/map.css" />
-	<title>View a location on a map!</title>
-	<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCRAwWsAJ4AolCZHLze4SmLubVO1fffTU8&sensor=false"></script>
-	<script type="text/javascript" src="assets/javascripts/map.js"></script>
-</head>
-	<body onload="initialize('map_canvas')">
-		<div id="address_panel">
+	<head>   
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+		<link rel="stylesheet" href="assets/stylesheets/map.css" />
+		<link rel="stylesheet" href="assets/stylesheets/bootstrap.css" />
+		<title>View a location on a map!</title>
+		<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCRAwWsAJ4AolCZHLze4SmLubVO1fffTU8&sensor=false"></script>
+		<script type="text/javascript" src="assets/javascripts/map.js"></script>
+	</head>
+	<body onload="initialize('map_canvas')" class="fill">
+		<div id="address_panel" class="fill">
 			<h3>Search a location</h3>
-			<form id="address_form" onsubmit="return geocodeAddressForm('address', 'geocode_result');">
-				<input type="text" id="address" />
-				<input type="submit" value="Go" />
+			<form id="address_form" onsubmit="return geocodeAddressForm('address', 'geocode_result');" class="form-search">
+				<div class="input-append">
+					<input type="text" id="address" class="span2 search-query" />
+					<input type="submit" value="Search" class="btn" />
+				</div>
 			</form>
 			<div id="geocode_result"></div>
 			<div id="report_form">@views.html.createReport()</div>
 		</div>
-		<div id="map_canvas"></div>
+		<div id="map_canvas" class="fill"></div>
 	</body>
 </html>
 
