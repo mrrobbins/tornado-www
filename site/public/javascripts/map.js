@@ -9,6 +9,21 @@ function initialize(elementId) {
 	};
 	map = new google.maps.Map(document.getElementById(elementId), mapOptions);
 	geocodeAddress("United States", centerAndZoomCallback(5));
+	$(document).ready(showMarkers);
+}
+
+function showMarkers() {
+	function displayMarkers(data) {
+		markers = data["markers"];
+		for (i in markers) {
+			console.debug(i)
+			var marker = markers[i];
+			var latLng = new google.maps.LatLng(marker["lat"], marker["long"]);
+			var m = makeMarker("dbDefault", latLng, marker["name"]);
+		}
+	}
+
+	$.getJSON("/api/map/markers/all", displayMarkers);
 }
 
 function geocodeAddressForm(addressId, resultAreaId) {
@@ -35,7 +50,12 @@ function makeMarker(group, latLng, title) {
 		position: latLng,
 		title: title
 	});
-
+	
+	if (group == "searchResult") {
+		marker.setIcon('http://maps.google.com/mapfiles/ms/icons/green-dot.png')
+		marker.setAnimation(google.maps.Animation.DROP)
+	}
+	
 	marker.setMap(map);
 
 	if (markerLists[group] == undefined) {
@@ -93,9 +113,9 @@ function  buildResultList(result, resultAreaId, selectionIndex) {
 	if (selectionIndex != undefined) {
 		var latLng = result[selectionIndex].geometry.location;
 		map.setCenter(latLng);
-		map.setZoom(8);
-		hideMarkerGroup("default");
-		makeMarker("default", latLng, result[selectionIndex].formatted_address);
+		map.setZoom(11);
+		hideMarkerGroup("searchResult");
+		makeMarker("searchResult", latLng, result[selectionIndex].formatted_address);
 	}
 
 	selectResult = function (selectionIndex) { 

@@ -9,6 +9,7 @@ import play.api.data.Forms._
 import play.api.data.format.Formats._
 import play.api.libs.json._
 import models.Report
+import models.Marker
 
 object Api extends Controller {
 
@@ -30,18 +31,20 @@ object Api extends Controller {
 		Ok(report.toString)
 	}
 
-	def getAllMarkers = Action {
+	def allMarkers = Action {
 		import Json.toJson
-		val allPoints = toJson(
+
+		val allMarkers = Marker.all.map(marker =>
 			Map(
-				"points" -> toJson(Seq(
-					toJson(Map("name" -> toJson("Crowded Denny Chimes"), "lat" -> toJson(33.210973), "lng" -> toJson(-87.546279))),
-					toJson(Map("name" -> toJson("SERC"), "lat" -> toJson(33.213998), "lng" -> toJson(-87.543624)))
-				))
+				"name" -> toJson(marker.description), 
+				"lat" -> toJson(marker.latitude), 
+				"long" -> toJson(marker.longitude)
 			)
 		)
 
-		Ok(allPoints)
+		val allMarkersJson = toJson(Map("markers" -> toJson(allMarkers)))
+
+		Ok(allMarkersJson)
 	}
 
 }
