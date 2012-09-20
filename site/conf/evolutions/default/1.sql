@@ -1,7 +1,7 @@
 # --- !Ups
 
 CREATE TABLE report (
-	id INTEGER PRIMARY KEY,
+	id INTEGER PRIMARY KEY AUTO_INCREMENT,
 	picture_path VARCHAR(1024),
 	time INTEGER NOT NULL, -- UNIX time
 	latitude DOUBLE NOT NULL,

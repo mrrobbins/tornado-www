@@ -5,12 +5,13 @@
 
 @helper.form(action = routes.Api.createReport) {
 
-	@helper.inputText(reportForm("id"), '_label -> "ID", '_showConstraints -> false)
 	@helper.inputText(reportForm("latitude"), '_label -> "Latitude", '_showConstraints -> false)
 	@helper.inputText(reportForm("longitude"), '_label -> "Longitude", '_showConstraints -> false)
 	@helper.inputText(reportForm("address"), '_label -> "Address")
 	@helper.inputText(reportForm("location_description"), '_label -> "Location description")
 	@helper.inputText(reportForm("notes"), '_label -> "Notes")
+	@helper.inputText(reportForm("indicator"), '_label -> "Indicator", '_showConstraints -> false)
+	@helper.inputText(reportForm("degree"), '_label -> "Degree", '_showConstraints -> false)
 
 	<input type="submit" value="Save" class="btn-primary" />
 }

@@ -8,21 +8,21 @@ import play.api.data._
 import play.api.data.Forms._
 import play.api.data.format.Formats._
 import play.api.libs.json._
-import models.Report
-import models.Marker
+import models._
 
 object Api extends Controller {
 
 
 	val reportForm = Form(
 		mapping(
-			"id" -> optional(longNumber),
 			"latitude" -> doubleDecimal,
 			"longitude" -> doubleDecimal,
 			"address" -> text,
 			"location_description" -> text,
-			"notes" -> text
-		)(Report.apply)(Report.unapply)
+			"notes" -> text,
+      "indicator" -> number,
+      "degree" -> number
+		)(ReportTemplate.apply)(ReportTemplate.unapply)
 	)
 
 	def createReport = Action { request =>
