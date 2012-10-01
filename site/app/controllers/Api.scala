@@ -1,3 +1,4 @@
+
 package controllers
 
 import data.format.Formats._
@@ -12,23 +13,32 @@ import models._
 
 object Api extends Controller {
 
-
-	val reportForm = Form(
-		mapping(
-			"latitude" -> doubleDecimal,
-			"longitude" -> doubleDecimal,
+	val collectionForm = Form(
+		tuple(
 			"address" -> text,
 			"location_description" -> text,
 			"notes" -> text,
       "indicator" -> number,
       "degree" -> number
-		)(ReportTemplate.apply)(ReportTemplate.unapply)
+		)
 	)
 
-	def createReport = Action { request =>
-		val report = reportForm.bindFromRequest()(request).get
-		Report.insert(report)	
-		Ok(report.toString)
+	def createCollection = Action { request =>
+		val form = collectionForm.bindFromRequest()(request).get
+		val inserted = {
+			import form._
+			CollectionTemplate(
+				_1,
+				_2,
+				_3,
+				_4,
+				_5,
+				0l,
+				Nil
+			)
+		}
+		Collection.insert(inserted)	
+		Ok("success")
 	}
 
 	def allMarkers = Action {
@@ -48,6 +58,4 @@ object Api extends Controller {
 	}
 
 }
-
-
 

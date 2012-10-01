@@ -16,7 +16,7 @@ object Marker {
 	def all() = DB.withConnection { c =>
 		val selectAllMarkers = SQL(
 			"""
-				SELECT * FROM report;
+				SELECT * FROM image;
 			"""
 		)
 

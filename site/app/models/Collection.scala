@@ -4,16 +4,16 @@ package models
 import anorm._
 import play.api.db.DB
 import play.api.Play.current
+import java.sql.SQLException
 
 case class CollectionTemplate(
-	gps_address: String,
 	address: String,
 	locationDescription: String,
 	notes: String,
   damageIndicator: Int,
   degreeOfDamage: Int,
-	primaryImageId: Int,
-	secondaryImages: Seq[Int]
+	primaryImageId: Long,
+	secondaryImages: Seq[Long]
 )
 
 case class Collection(
@@ -25,56 +25,45 @@ case class Collection(
 	notes: String,
 	damageIndicator: Int,
 	degreeOfDamage: Int,
-	primaryImage: (PendingImageTemplate),
-	secondaryImages: Seq[PendingImageTemplate)]
+	primaryImage: Long,
+	secondaryImages: Seq[Long]
 )
 
 object Collection {
 
-	def insert(r: CollectionTemplate): Option[Long] = DB.withTransaction { c =>
+	def insert(c: CollectionTemplate): Option[Long] = DB.withTransaction { conn: java.sql.Connection =>
 		val newCollection = SQL(
 			"""
-				INSERT INTO collection (time, gps_address, address, location_description, notes, damage_indicator, degree_of_damage, primary_image_id) 
-				VALUES (UNIX_TIMESTAMP(), {gpsAddr}, {addr}, {desc}, {notes}, {indicator}, {degree}, {priImg})
+				INSERT INTO collection (time_created, gps_address, address, location_description, notes, primary_image_id) 
+				VALUES (UNIX_TIMESTAMP(), {gpsAddr}, {addr}, {desc}, {notes}, {priImg})
 			"""
 		).on(
-			"gpsAddr" -> r.gpsAddress,
-			"addr" -> r.address, 
-			"desc" -> r.locationDescription,
-			"notes" -> r.notes,
-      "indicator" -> r.damageIndicator,
-      "degree" -> r.degreeOfDamage,
-			"priImg" -> r.primaryImageId
+			"gpsAddr" -> "",
+			"addr" -> c.address, 
+			"desc" -> c.locationDescription,
+			"notes" -> c.notes,
+			"priImg" -> c.primaryImageId
 		)
 
 		try {
-			val priKey = newCollection.executeInsert()(c)
+			val priKey = newCollection.executeInsert()(conn).getOrElse(throw new SQLException("Failed to create collection"))
 
-			for (pendingImg <- r.secondaryImage :+ r.primaryImage) {
-				val newCollectionImage = Sql(
-					"""
-						INSERT INTO collection_image (collection_id, image_id, damage_indicator, degree_of_damage, notes) 
-						VALUES ({cid}, {iid}, {di}, {dd}, {notes})
-					"""
-				).on(
-					"cid" -> priKey,
-					"iid" -> pendingImg.imageId,
-					"di" -> pendingImg.damageIndicator,
-					"dd" -> pendingImg.damageDegree,
-					"notes" -> pendingImg.notes
-				)
-				newCollectionImage.executeInsert()(c)
+			for (id <- c.secondaryImages :+ c.primaryImageId) {
+				val pendingImage = PendingImage.withId(id)
+				PendingImage.remove(id)
+				Image.setCollection(id, priKey)
 			}
 
+			conn.commit()
 			Some(priKey)
 		} catch {
-			case e: java.sql.SqlException => 
+			case e: java.sql.SQLException => 
 				e.printStackTrace()
-				c.rollback()
+				conn.rollback()
 				None
 			case e: Exception =>
 				e.printStackTrace()
-				c.rollback()
+				conn.rollback()
 				None
 		}
 	}

@@ -1,17 +1,15 @@
 @()
 
-@import controllers.Api.reportForm
+@import controllers.Api.collectionForm
 @import helper.twitterBootstrap._
 
-@helper.form(action = routes.Api.createReport) {
+@helper.form(action = routes.Api.createCollection) {
 
-	@helper.inputText(reportForm("latitude"), '_label -> "Latitude", '_showConstraints -> false)
-	@helper.inputText(reportForm("longitude"), '_label -> "Longitude", '_showConstraints -> false)
-	@helper.inputText(reportForm("address"), '_label -> "Address")
-	@helper.inputText(reportForm("location_description"), '_label -> "Location description")
-	@helper.inputText(reportForm("notes"), '_label -> "Notes")
-	@helper.inputText(reportForm("indicator"), '_label -> "Indicator", '_showConstraints -> false)
-	@helper.inputText(reportForm("degree"), '_label -> "Degree", '_showConstraints -> false)
+	@helper.inputText(collectionForm("latitude"), '_label -> "Latitude", '_showConstraints -> false)
+	@helper.inputText(collectionForm("longitude"), '_label -> "Longitude", '_showConstraints -> false)
+	@helper.inputText(collectionForm("address"), '_label -> "Address")
+	@helper.inputText(collectionForm("location_description"), '_label -> "Location description")
+	@helper.inputText(collectionForm("notes"), '_label -> "Notes")
 
 	<input type="submit" value="Save" class="btn-primary" />
 }
