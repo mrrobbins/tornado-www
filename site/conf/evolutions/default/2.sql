@@ -1,0 +1,19 @@
+# --- !Ups
+
+CREATE TABLE case_study (
+	id INTEGER PRIMARY KEY AUTO_INCREMENT,
+	name VARCHAR(256) NOT NULL,
+	description VARCHAR(10240) NOT NULL 
+);
+
+CREATE TABLE user (
+	id INTEGER PRIMARY KEY AUTO_INCREMENT,
+	username VARCHAR(32) NOT NULL,
+	admin BOOLEAN NOT NULL
+);
+
+# --- !Downs
+
+DROP TABLE user;
+DROP TABLE case_study;
+
