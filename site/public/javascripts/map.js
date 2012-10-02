@@ -8,7 +8,7 @@ function initialize(elementId) {
 		mapTypeId: google.maps.MapTypeId.ROADMAP
 	};
 	map = new google.maps.Map(document.getElementById(elementId), mapOptions);
-	geocodeAddress("United States", centerAndZoomCallback(5));
+	geocodeAddress("United States", focusOnPlaceCallback);
 	$(document).ready(showMarkers);
 	$("#hide_sidebar_button").click(function() {
 		$("#sidebar").hide()
@@ -119,11 +119,11 @@ function  buildResultList(result, resultAreaId, selectionIndex) {
 	resultArea.appendChild(resultList);
 
 	if (selectionIndex != undefined) {
-		var latLng = result[selectionIndex].geometry.location;
-		map.setCenter(latLng);
-		map.setZoom(11);
+		var coord = result[selectionIndex].geometry.location;
+		map.setCenter(coord);
+		map.fitBounds(result[selectionIndex].geometry.viewport);
 		hideMarkerGroup("searchResult");
-		makeMarker("searchResult", latLng, result[selectionIndex].formatted_address);
+		makeMarker("searchResult", coord, result[selectionIndex].formatted_address);;
 	}
 
 	selectResult = function (selectionIndex) { 
@@ -138,6 +138,11 @@ function geocodeAddress(anAddress, callback) {
 	};
 
 	Geocoder.geocode(request, callback)
+}
+
+function focusOnPlaceCallback(results, state) {
+	map.setCenter(results[0].geometry.location);
+	map.fitBounds(results[0].geometry.viewport);
 }
 
 function centerAndZoomCallback(zoom) {
