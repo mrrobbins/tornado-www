@@ -1,5 +1,22 @@
 
 body, html { height: 100%; width: 100%; }
-.fill { min-height: 100%; }
-#address_panel { padding-left: 1em; padding-right: 0.5em; padding-top: 1em; float: left; }
+body { background-color: #efefef; }
+#address-panel {
+	margin-right: 25px;
+	height: 100%;
+	text-align: center;
+}
+#address-pannel li { text-align: center; }
+#map-canvas { border-left-style: solid;  border-color: black; border-width: thin; height: 100%; }
 
+#content {
+	top: 41px;
+	bottom: 0;
+	right: 0;
+	left: 0;
+	position: absolute;
+}
+
+#map-canvas img {
+	max-width: none;
+}

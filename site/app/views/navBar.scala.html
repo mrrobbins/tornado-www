@@ -1,15 +1,38 @@
-@()
+@(selected: Option[views.nav.NavItem] = None, searchText: Option[String] = None)
 
 @import views.nav._
 
-<div class="navbar navbar-static-top navbar-inverse">
+@item(item: NavItem) = {
+	@if(selected.map(_.name == item.name).getOrElse(false)) {
+		<li class="active">
+			<a href="@item.url" class=active">@item.name</a>
+		</li>
+	} else {
+		<li>
+			<a href="@item.url">@item.name</a>
+		</li>
+	}
+}
+
+<div id="navbar" class="navbar navbar-static-top navbar-inverse">
 	<div class="navbar-inner">
+		@if(searchText.isDefined) {
+			<form 
+				d="address_form"
+				onsubmit="return geocodeAddressForm('address', 'geocode_result');"
+				class="navbar-search"
+			>
+					<input type="text" id="address" class="search-query span2" placeholder="@searchText.get" />
+			</form>
+		}
 		<ul class="nav">
-			@for(headerItem <- NavBar.headerItems) {
-				<li>
-					<a href="@headerItem.url">@headerItem.name</a>
-				</li>
+			@if(searchText.isDefined) {
+				<li class="divider-vertical"></li>
 			}
+			@NavBar.headerItems.map(item)
+		</ul>
+		<ul class="nav pull-right">
+			<li><a href="javascript:void(0)">Sign In</a></li>
 		</ul>
 	</div>
 </div>
