@@ -4,13 +4,13 @@ body { background-color: #efefef; }
 
 #sidebar { height: 100%; margin-right: 1px; }
 
-#address-panel {
+#address_panel {
 	margin-right: 10px;
 	height: 100%;
 	text-align: center;
 }
-#address-panel li { font-size: 12px; line-height: 16px; padding-top: .5em; padding-bottom: .5em;}
-#map-canvas { border-left-style: solid;  border-color: black; border-width: thin; height: 100%; }
+#address_panel li { font-size: 12px; line-height: 16px; padding-top: .5em; padding-bottom: .5em;}
+#map_canvas { border-left-style: solid;  border-color: black; border-width: thin; height: 100%; }
 
 #content {
 	top: 41px;
@@ -20,7 +20,7 @@ body { background-color: #efefef; }
 	position: absolute;
 }
 
-#map-canvas img {
+#map_canvas img {
 	max-width: none;
 }
 
@@ -28,6 +28,6 @@ body { background-color: #efefef; }
 	clear: both;
 }
 
-#address-panel .icon-remove-sign {
+#address_panel .icon-remove-sign {
 	margin-top: 1em;
 }

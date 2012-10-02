@@ -11,13 +11,22 @@ function initialize(elementId) {
 	geocodeAddress("United States", focusOnPlaceCallback);
 	$(document).ready(showMarkers);
 	$("#hide_sidebar_button").click(function() {
-		$("#sidebar").hide()
+		$("#sidebar").hide("fast", function() {
+			resizeMap();
+		});
 	});
 
 	$("#search_form").click(function() {
-		$("#sidebar").show()
+		$("#sidebar").show("fast", function() {
+			resizeMap();
+		});
 	});
 	
+}
+
+function resizeMap() {
+	var map = document.getElementById("map_canvas");
+	google.maps.event.trigger(map, "resize");
 }
 
 function showMarkers() {

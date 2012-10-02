@@ -13,17 +13,17 @@
 		<script type="text/javascript" src="assets/javascripts/jquery-1.8.1.js"></script>
 		<script type="text/javascript" src="assets/javascripts/map.js"></script>
 	</head>
-	<body onload="initialize('map-canvas')">
+	<body onload="initialize('map_canvas')">
 		@views.html.navBar(Some(NavBar.Map), Some("Search Location"))
 		<div id="content">
 			<div id="sidebar" class="pull-left">
 				<a id="hide_sidebar_button" href="javascript:void(0)"><span class="icon-remove-sign pull-right"></span></a>
-					<div id="address-panel" class="span2">
+					<div id="address_panel" class="span2">
 						<h4 id="results_heading">Results</h4>
 						<div id="geocode_result"></div>
 					</div>
 			</div>
-			<div id="map-canvas"></div>
+			<div id="map_canvas"></div>
 		</div>
 	</body>
 </html>
