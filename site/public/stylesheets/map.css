@@ -6,7 +6,7 @@ body { background-color: #efefef; }
 	height: 100%;
 	text-align: center;
 }
-#address-pannel li { text-align: center; }
+#address-panel li { font-size: 12px; line-height: 16px; padding-top: .5em; padding-bottom: .5em;}
 #map-canvas { border-left-style: solid;  border-color: black; border-width: thin; height: 100%; }
 
 #content {
