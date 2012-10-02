@@ -18,7 +18,7 @@
 	<div class="navbar-inner">
 		@if(searchText.isDefined) {
 			<form 
-				d="address_form"
+				id="search_form"
 				onsubmit="return geocodeAddressForm('address', 'geocode_result');"
 				class="navbar-search"
 			>

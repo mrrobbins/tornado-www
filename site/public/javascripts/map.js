@@ -10,6 +10,14 @@ function initialize(elementId) {
 	map = new google.maps.Map(document.getElementById(elementId), mapOptions);
 	geocodeAddress("United States", centerAndZoomCallback(5));
 	$(document).ready(showMarkers);
+	$("#hide_sidebar_button").click(function() {
+		$("#sidebar").hide()
+	});
+
+	$("#search_form").click(function() {
+		$("#sidebar").show()
+	});
+	
 }
 
 function showMarkers() {
