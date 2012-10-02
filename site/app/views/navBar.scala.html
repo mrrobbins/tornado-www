@@ -1,0 +1,15 @@
+@()
+
+@import views.nav._
+
+<div class="navbar navbar-static-top navbar-inverse">
+	<div class="navbar-inner">
+		<ul class="nav">
+			@for(headerItem <- NavBar.headerItems) {
+				<li>
+					<a href="@headerItem.url">@headerItem.name</a>
+				</li>
+			}
+		</ul>
+	</div>
+</div>

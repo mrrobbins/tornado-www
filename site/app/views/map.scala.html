@@ -12,9 +12,10 @@
 		<script type="text/javascript" src="assets/javascripts/map.js"></script>
 	</head>
 	<body onload="initialize('map_canvas')" class="fill">
+		@views.html.navBar()
 		<div id="address_panel">
 			<form id="address_form" onsubmit="return geocodeAddressForm('address', 'geocode_result');" class="form-search">
-				<div class="input-append">
+				<div class="input-append span3">
 					<input type="text" id="address" class="span2 search-query" placeholder="Enter a location" />
 					<input type="submit" value="Search" class="btn" />
 				</div>
