@@ -1,4 +1,6 @@
 
+package modelSpec
+
 import org.specs2.mutable._
 
 import play.api.test._
@@ -10,17 +12,6 @@ import play.api.db.DB
 import models._
 
 class ImageSpec extends Specification {
-
-	def fa = FakeApplication(additionalConfiguration = inMemoryDatabase())
-
-	def withApp[T](func: => T): T = {
-		Play.start(fa)
-		try {
-			func
-		} finally {
-			Play.stop()
-		}
-	}
 
 	"The 'Image' object" should {
 		"start empty" in withApp {
@@ -105,6 +96,27 @@ class ImageSpec extends Specification {
 
 			val fromDB = DB.withConnection(conn => Image.pending(conn)(imageId)).get
 			fromDB.pending && fromDB.id == imageId && fromDB.user == userId
+
+		}
+
+		"support adding images to a collection" in withApp {
+	
+			val insertedUser = UserTemplate("al", false)
+			val userId = User.insert(insertedUser)
+
+			val insertedImage = ImageTemplate(
+				"/path",
+				3.4,
+				2.3,
+				userId,
+				"Notes",
+				9,
+				1
+			)
+
+			Image.insert(insertedImage)
+
+			pending
 
 		}
 
