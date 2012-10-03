@@ -23,7 +23,107 @@ case class Image(
 	def addToCollection(collectionId: Long) { Image.addToCollection(id, collectionId) }
 }
 
+case class ImageTemplate(
+	path: String,
+	latitude: Double,
+	longitude: Double,
+	userId: Int,
+	notes: String,
+	indicator: Int,
+	degree: Int
+)
+
 object Image {
+
+	def all = DB.withConnection { conn =>
+		val pendingQuery = SQL(
+			"""
+				SELECT * FROM image JOIN pending_image ON image.id = pending_image.image_id;
+			"""
+		)
+
+		val collectionQuery = SQL(
+			"""
+				SELECT * FROM image join collection_image  ON image.id = collection_image.image_id;
+			"""
+		)
+
+		val pendingRows = pendingQuery()(conn).map { row =>
+			Image(
+				row[Long]("id"),
+				row[String]("image_path"),
+				row[Long]("time_captured"),
+				row[Double]("latitude"),
+				row[Double]("longitude"),
+				row[Int]("user_id"),
+				row[String]("notes"),
+				row[Int]("damage_indicator"),
+				row[Int]("degree_of_damage"),
+				None,
+				true
+			)
+		} toList
+
+		val collectionRows = pendingQuery()(conn).map { row =>
+			Image(
+				row[Long]("id"),
+				row[String]("image_path"),
+				row[Long]("time_captured"),
+				row[Double]("latitude"),
+				row[Double]("longitude"),
+				row[Int]("user_id"),
+				row[String]("notes"),
+				row[Int]("damage_indicator"),
+				row[Int]("degree_of_damage"),
+				Some(row[Int]("collection_id")),
+				false
+			)
+		} toList
+
+		pendingRows ++ collectionRows
+
+	}
+
+	def insert(template: ImageTemplate) = DB.withTransaction { conn =>
+		try {
+			val imageInsertion = SQL(
+				"""
+					INSERT INTO image (image_path, time_captured, latitude, longitude, user_id)
+					VALUES ({path}, {time}, {lat}, {long}, {user});
+				"""
+			).on(
+					"path" -> template.path,
+					"time" -> 0,
+					"lat" -> template.latitude,
+					"long" -> template.longitude,
+					"user" -> template.userId
+			)
+
+			val image = imageInsertion.executeInsert()(conn).getOrElse("Failed to create image")
+			val pendingInsert = SQL(
+				"""
+					INSERT INTO pending_image (notes, damage_indicator, degree_of_damage, user_id)
+					VALUES ({notes}, {indicator}, {degree}, {user});
+				"""
+			).on(
+				"notes" -> template.notes,
+				"indicator" -> template.indicator,
+				"degree" -> template.degree,
+				"user" -> template.userId
+			)
+
+			val pending = pendingInsert.executeInsert()(conn).getOrElse("Failed to add to pending")
+			conn.commit()
+		} catch {
+			case e: SQLException =>
+				e.printStackTrace()
+				conn.rollback()
+			case e: Exception =>
+				e.printStackTrace()
+				conn.rollback()
+		}
+	}
+
 	def addToCollection(imageId: Long, collectionId: Long, fromCollectionId: Option[Long] = None) = 
 		DB.withTransaction { conn: java.sql.Connection => 
 
