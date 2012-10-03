@@ -30,7 +30,6 @@ class ImageSpec extends Specification {
 		"support a single insertion" in withApp {
 
 			val insertedUser = UserTemplate("al", false)
-
 			val userId = User.insert(insertedUser)
 
 			val insertedImage = ImageTemplate(
@@ -54,6 +53,37 @@ class ImageSpec extends Specification {
 				image.degree == insertedImage.degree
 			}
 
+		}
+
+		"support multiple insertions" in withApp {
+
+			val insertedUser = UserTemplate("al", false)
+			val userId = User.insert(insertedUser)
+
+			val images = for (i <- 1 to 100) yield {
+				ImageTemplate(
+					"/path/i",
+					i * 0.5,
+					i * 1.1,
+					userId,
+					"Notes " + i,
+					i % 5,
+					i % 5
+				)
+			}
+
+			images.foreach(Image.insert)
+			images.forall { template =>
+				Image.all.exists { image =>
+					image.lat == template.lat &&
+					image.long == template.long &&
+					image.notes == template.notes &&
+					image.path == template.path &&
+					image.indicator == template.indicator &&
+					image.degree == template.degree
+				}
+			}
+			
 		}
 
 		"add new images as pending" in withApp {
