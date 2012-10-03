@@ -25,8 +25,8 @@ case class Image(
 
 case class ImageTemplate(
 	path: String,
-	latitude: Double,
-	longitude: Double,
+	lat: Double,
+	long: Double,
 	userId: Int,
 	notes: String,
 	indicator: Int,
@@ -51,7 +51,7 @@ object Image {
 		val pendingRows = pendingQuery()(conn).map { row =>
 			Image(
 				row[Long]("id"),
-				row[String]("image_path"),
+				row[String]("picture_path"),
 				row[Long]("time_captured"),
 				row[Double]("latitude"),
 				row[Double]("longitude"),
@@ -64,10 +64,10 @@ object Image {
 			)
 		} toList
 
-		val collectionRows = pendingQuery()(conn).map { row =>
+		val collectionRows = collectionQuery()(conn).map { row =>
 			Image(
 				row[Long]("id"),
-				row[String]("image_path"),
+				row[String]("picture_path"),
 				row[Long]("time_captured"),
 				row[Double]("latitude"),
 				row[Double]("longitude"),
@@ -88,28 +88,29 @@ object Image {
 		try {
 			val imageInsertion = SQL(
 				"""
-					INSERT INTO image (image_path, time_captured, latitude, longitude, user_id)
+					INSERT INTO image (picture_path, time_captured, latitude, longitude, user_id)
 					VALUES ({path}, {time}, {lat}, {long}, {user});
 				"""
 			).on(
 					"path" -> template.path,
 					"time" -> 0,
-					"lat" -> template.latitude,
-					"long" -> template.longitude,
+					"lat" -> template.lat,
+					"long" -> template.long,
 					"user" -> template.userId
 			)
 
 			val image = imageInsertion.executeInsert()(conn).getOrElse("Failed to create image")
 			val pendingInsert = SQL(
 				"""
-					INSERT INTO pending_image (notes, damage_indicator, degree_of_damage, user_id)
-					VALUES ({notes}, {indicator}, {degree}, {user});
+					INSERT INTO pending_image (image_id, notes, damage_indicator, degree_of_damage, user_id)
+					VALUES ({image}, {notes}, {indicator}, {degree}, {user});
 				"""
 			).on(
 				"notes" -> template.notes,
 				"indicator" -> template.indicator,
 				"degree" -> template.degree,
-				"user" -> template.userId
+				"user" -> template.userId,
+				"image" -> image
 			)
 
 			val pending = pendingInsert.executeInsert()(conn).getOrElse("Failed to add to pending")
