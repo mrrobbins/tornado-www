@@ -13,6 +13,12 @@ import models._
 
 object Api extends Controller {
 
+	def addToCollection(imageId: Long, collectionId: Long, fromCollectionId: Option[Long]) = {
+		Action { request => 
+		Ok(Image.addToCollection(imageId, collectionId).toString)
+		}
+	}
+
 	val collectionForm = Form(
 		tuple(
 			"address" -> text,

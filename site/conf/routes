@@ -9,6 +9,8 @@ GET       /map                      controllers.Application.map
 
 POST	    /api/collections/new      controllers.Api.createCollection
 
+GET				/api/images/addToCollection controllers.Api.addToCollection(imageId: Long, collectionId: Long, fromCollectionId: Option[Long])
+
 GET		   /api/map/markers/all       controllers.Api.allMarkers
 
 GET      /photoqueue                controllers.Todo.todo

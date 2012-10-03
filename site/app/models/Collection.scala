@@ -31,7 +31,8 @@ case class Collection(
 
 object Collection {
 
-	def insert(c: CollectionTemplate): Option[Long] = DB.withTransaction { conn: java.sql.Connection =>
+	def insert(c: CollectionTemplate): Option[Long] = 
+		DB.withTransaction { conn: java.sql.Connection =>
 		val newCollection = SQL(
 			"""
 				INSERT INTO collection (time_created, gps_address, address, location_description, notes, primary_image_id) 
@@ -49,9 +50,8 @@ object Collection {
 			val priKey = newCollection.executeInsert()(conn).getOrElse(throw new SQLException("Failed to create collection"))
 
 			for (id <- c.secondaryImages :+ c.primaryImageId) {
-				val pendingImage = PendingImage.withId(id)
-				PendingImage.remove(id)
-				Image.setCollection(id, priKey)
+				val pendingImage = Image.pending(conn)(id)
+				Image.addToCollection(id, priKey)
 			}
 
 			conn.commit()
