@@ -4,6 +4,8 @@ import org.specs2.mutable._
 import play.api.test._
 import play.api.test.Helpers._
 import play.api.Play
+import play.api.Play.current
+import play.api.db.DB
 
 import models._
 
@@ -27,19 +29,20 @@ class ImageSpec extends Specification {
 
 		"support a single insertion" in withApp {
 
-			val insertedUser = User(88, "al", false)
+			val insertedUser = UserTemplate("al", false)
+
+			val userId = User.insert(insertedUser)
 
 			val insertedImage = ImageTemplate(
 				"/path",
 				3.4,
 				2.3,
-				insertedUser.id,
+				userId,
 				"Notes",
 				9,
 				1
 			)
 
-			User.insert(insertedUser)
 			Image.insert(insertedImage)
 
 			Image.all.exists { image =>
@@ -50,6 +53,28 @@ class ImageSpec extends Specification {
 				image.indicator == insertedImage.indicator &&
 				image.degree == insertedImage.degree
 			}
+
+		}
+
+		"add new images as pending" in withApp {
+
+			val insertedUser = UserTemplate("al", false)
+			val userId = User.insert(insertedUser)
+
+			val insertedImage = ImageTemplate(
+				"/path",
+				3.4,
+				2.3,
+				userId,
+				"Notes",
+				9,
+				1
+			)
+
+			val imageId = Image.insert(insertedImage).get
+
+			val fromDB = DB.withConnection(conn => Image.pending(conn)(imageId)).get
+			fromDB.pending && fromDB.id == imageId && fromDB.user == userId
 
 		}
 

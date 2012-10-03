@@ -12,7 +12,7 @@ case class Image(
 	time: Long,
 	lat: Double,
 	long: Double,
-	user: Int,
+	user: Long,
 	notes: String,
 	indicator: Int,
 	degree: Int,
@@ -27,7 +27,7 @@ case class ImageTemplate(
 	path: String,
 	lat: Double,
 	long: Double,
-	userId: Int,
+	userId: Long,
 	notes: String,
 	indicator: Int,
 	degree: Int
@@ -84,7 +84,7 @@ object Image {
 
 	}
 
-	def insert(template: ImageTemplate) = DB.withTransaction { conn =>
+	def insert(template: ImageTemplate): Option[Long] = DB.withTransaction { conn =>
 		try {
 			val imageInsertion = SQL(
 				"""
@@ -99,29 +99,32 @@ object Image {
 					"user" -> template.userId
 			)
 
-			val image = imageInsertion.executeInsert()(conn).getOrElse("Failed to create image")
+			val image = imageInsertion.executeInsert()(conn).getOrElse(throw new SQLException("Failed to create image"))
 			val pendingInsert = SQL(
 				"""
 					INSERT INTO pending_image (image_id, notes, damage_indicator, degree_of_damage, user_id)
 					VALUES ({image}, {notes}, {indicator}, {degree}, {user});
 				"""
 			).on(
+				"image" -> image,
 				"notes" -> template.notes,
 				"indicator" -> template.indicator,
 				"degree" -> template.degree,
-				"user" -> template.userId,
-				"image" -> image
+				"user" -> template.userId
 			)
 
-			val pending = pendingInsert.executeInsert()(conn).getOrElse("Failed to add to pending")
+			if (pendingInsert.executeUpdate()(conn) != 1) throw new SQLException("Failed to add to pending")
 			conn.commit()
+			Some(image)
 		} catch {
 			case e: SQLException =>
 				e.printStackTrace()
 				conn.rollback()
+				None
 			case e: Exception =>
 				e.printStackTrace()
 				conn.rollback()
+				None
 		}
 	}
 

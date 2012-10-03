@@ -26,11 +26,11 @@ class UserSpec extends Specification {
 
 		"support a single insertion" in withApp {
 
-			val inserted = User(88, "al", false)
-			User.insert(inserted)
+			val inserted = UserTemplate("al", false)
+			val id = User.insert(inserted)
 			User.all.exists { user =>
 				user.name == inserted.name &&
-				user.id == inserted.id &&
+				user.id == id &&
 				user.isAdmin == inserted.isAdmin
 			}
 

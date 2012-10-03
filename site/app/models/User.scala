@@ -12,6 +12,11 @@ case class User(
 	isAdmin: Boolean
 )
 
+case class UserTemplate(
+	name: String,
+	isAdmin: Boolean
+)
+
 object User {
 	def all = DB.withConnection { conn =>
 		val query = SQL(
@@ -31,19 +36,16 @@ object User {
 		} toList
 	}
 
-	def insert(user: User) = DB.withConnection { conn =>
+	def insert(user: UserTemplate) = DB.withConnection { conn =>
 		val query = SQL(
 			"""
-				INSERT INTO user (id, username, admin)
-				VALUES ({id}, {name}, {admin})
+				INSERT INTO user (username, admin)
+				VALUES ({name}, {admin})
 			""").on(
 				"name" -> user.name,
-				"id" -> user.id,
 				"admin" -> user.isAdmin
 			)
 
-			if (query.executeUpdate()(conn) != 1) {
-				throw new SQLException("Failed to create user")
-			}
+			query.executeInsert()(conn).getOrElse(throw new SQLException("Failed to insert user"))
 	}
 }
