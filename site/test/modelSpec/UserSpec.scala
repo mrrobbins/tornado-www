@@ -13,11 +13,11 @@ class UserSpec extends Specification {
 
 
 	"The 'User' object" should {
-		"start empty" in withApp {
+		"start empty" in appCode {
 			User.all.size must_== 0
 		}
 
-		"support a single insertion" in withApp {
+		"support a single insertion" in appCode {
 
 			val inserted = UserTemplate("al", false)
 			val id = User.insert(inserted)

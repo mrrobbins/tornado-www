@@ -14,11 +14,11 @@ import models._
 class ImageSpec extends Specification {
 
 	"The 'Image' object" should {
-		"start empty" in withApp {
+		"start empty" in appCode {
 				Image.all.size must_== 0
 		}
 
-		"support a single insertion" in withApp {
+		"support a single insertion" in appCode {
 
 			val insertedUser = UserTemplate("al", false)
 			val userId = User.insert(insertedUser)
@@ -46,7 +46,7 @@ class ImageSpec extends Specification {
 
 		}
 
-		"support multiple insertions" in withApp {
+		"support multiple insertions" in appCode {
 
 			val insertedUser = UserTemplate("al", false)
 			val userId = User.insert(insertedUser)
@@ -77,7 +77,7 @@ class ImageSpec extends Specification {
 			
 		}
 
-		"add new images as pending" in withApp {
+		"add new images as pending" in appCode {
 
 			val insertedUser = UserTemplate("al", false)
 			val userId = User.insert(insertedUser)
@@ -99,7 +99,7 @@ class ImageSpec extends Specification {
 
 		}
 
-		"support adding images to a collection" in withApp {
+		"support adding images to a collection" in appCode {
 	
 			val insertedUser = UserTemplate("al", false)
 			val userId = User.insert(insertedUser)
