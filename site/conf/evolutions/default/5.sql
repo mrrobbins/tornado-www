@@ -11,7 +11,6 @@ CREATE TABLE collection (
 	damage_indicator INTEGER NOT NULL,
 	degree_of_damage INTEGER NOT NULL,
 	FOREIGN KEY(primary_image_id) REFERENCES image(id),
-	CHECK (primary_image_id NOT IN (SELECT image_id from pending_image))
 );
 
 # --- !Downs

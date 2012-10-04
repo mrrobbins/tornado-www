@@ -104,21 +104,54 @@ class ImageSpec extends Specification {
 			val insertedUser = UserTemplate("al", false)
 			val userId = User.insert(insertedUser)
 
-			val insertedImage = ImageTemplate(
-				"/path",
+			val insertedImage1 = ImageTemplate(
+				"/path1",
 				3.4,
 				2.3,
 				userId,
-				"Notes",
+				"Notes1",
 				9,
 				1
 			)
 
-			Image.insert(insertedImage)
+			val firstImage = Image.insert(insertedImage1).get
 
-			pending
+			val insertedCollection = CollectionTemplate(
+				"234 Breezy Way",
+				"A large house",
+				"It's windy here",
+				4,
+				2,
+				firstImage,
+				Nil
+			)
 
+			val collectionId = Collection.insert(insertedCollection).get
+
+			val insertedImage2 = ImageTemplate(
+				"/path2",
+				1.2,
+				5.3,
+				userId,
+				"Notes",
+				7,
+				8
+			)
+
+			val secondImage = Image.insert(insertedImage2).get
+			Image.addToCollection(secondImage, collectionId)
+
+			Image.all.exists { image =>
+				image.id == secondImage &&
+				image.collectionId == Some(collectionId) &&
+				image.path == insertedImage2.path &&
+				image.notes == insertedImage2.notes &&
+				image.lat == insertedImage2.lat &&
+				image.long == insertedImage2.long &&
+				image.user == userId &&
+				image.indicator == insertedImage2.indicator &&
+				image.degree == insertedImage2.degree
+			}
 		}
-
 	}
 }

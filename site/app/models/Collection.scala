@@ -93,7 +93,7 @@ object Collection {
 			} toList
 
 			Collection(
-				row[Long]("image.id"),
+				row[Long]("primary_image_id"),
 				row[Long]("time_created"),
 				row[String]("gps_address"),
 				row[String]("address"),

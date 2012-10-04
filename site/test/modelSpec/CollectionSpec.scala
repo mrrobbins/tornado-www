@@ -5,32 +5,11 @@ import org.specs2.mutable._
 
 import play.api.test._
 import play.api.test.Helpers._
-import play.api.Play
-import play.api.Play.current
-import play.api.db.DB
-import anorm._
 
 import models._
 
 class CollectionSpec extends Specification {
 	
-	/*** Alias UNIX_TIMESTAMP for h2
-	*/
-	def insertTimestampAlias() = {
-		DB.withConnection { conn =>
-			val query = SQL(
-				"""
-					CREATE ALIAS UNIX_TIMESTAMP AS $$
-						long unix_timestamp() { return System.currentTimeMillis()/1000L; }
-					$$;
-
-				"""
-			)
-
-			query.execute()(conn)
-		}
-	}
-
 	"The 'Collection' object" should {
 		
 		"start empty" in appCode {
@@ -38,8 +17,6 @@ class CollectionSpec extends Specification {
 		}
 
 		"support a single insertion" in appCode {
-
-			insertTimestampAlias()
 
 			val insertedUser = UserTemplate("al", true)
 			val userId = User.insert(insertedUser)
