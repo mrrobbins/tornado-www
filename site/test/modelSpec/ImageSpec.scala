@@ -94,7 +94,7 @@ class ImageSpec extends Specification {
 
 			val imageId = Image.insert(insertedImage).get
 
-			val fromDB = DB.withConnection(conn => Image.pending(conn)(imageId)).get
+			val fromDB = Image.pending(imageId).get
 			fromDB.pending && fromDB.id == imageId && fromDB.user == userId
 
 		}

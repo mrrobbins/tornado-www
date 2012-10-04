@@ -4,7 +4,7 @@ package models
 import anorm._
 import play.api.db.DB
 import play.api.Play.current
-import java.sql.SQLException
+import java.sql._
 
 case class User(
 	id: Int,
@@ -18,14 +18,14 @@ case class UserTemplate(
 )
 
 object User {
-	def all = DB.withConnection { conn =>
+	def all(implicit conn: Connection = null) = ensuringConnection { implicit conn =>
 		val query = SQL(
 			"""
 				SELECT * FROM user;
 			"""
 		)
 
-		val rows = query()(conn)
+		val rows = query()
 
 		rows.map { row =>
 			User(
@@ -36,7 +36,7 @@ object User {
 		} toList
 	}
 
-	def insert(user: UserTemplate) = DB.withConnection { conn =>
+	def insert(user: UserTemplate)(implicit trans: Connection = null) = ensuringTransaction { implicit conn =>
 		val query = SQL(
 			"""
 				INSERT INTO user (username, admin)
@@ -46,6 +46,6 @@ object User {
 				"admin" -> user.isAdmin
 			)
 
-			query.executeInsert()(conn).getOrElse(throw new SQLException("Failed to insert user"))
+			query.executeInsert().getOrElse(throw new SQLException("Failed to insert user"))
 	}
 }

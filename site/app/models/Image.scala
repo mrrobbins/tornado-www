@@ -35,7 +35,7 @@ case class ImageTemplate(
 
 object Image {
 
-	def all = DB.withConnection { conn =>
+	def all(implicit conn: Connection = null) = ensuringConnection { implicit conn =>
 		val pendingQuery = SQL(
 			"""
 				SELECT * FROM image JOIN pending_image ON image.id = pending_image.image_id;
@@ -48,7 +48,7 @@ object Image {
 			"""
 		)
 
-		val pendingRows = pendingQuery()(conn).map { row =>
+		val pendingRows = pendingQuery().map { row =>
 			Image(
 				row[Long]("id"),
 				row[String]("picture_path"),
@@ -64,7 +64,7 @@ object Image {
 			)
 		} toList
 
-		val collectionRows = collectionQuery()(conn).map { row =>
+		val collectionRows = collectionQuery().map { row =>
 			Image(
 				row[Long]("id"),
 				row[String]("picture_path"),
@@ -84,7 +84,7 @@ object Image {
 
 	}
 
-	def insert(template: ImageTemplate): Option[Long] = DB.withTransaction { conn =>
+	def insert(template: ImageTemplate)(implicit trans: Connection = null): Option[Long] = ensuringTransaction { implicit trans =>
 		try {
 			val imageInsertion = SQL(
 				"""
@@ -99,7 +99,7 @@ object Image {
 					"user" -> template.userId
 			)
 
-			val image = imageInsertion.executeInsert()(conn).getOrElse(throw new SQLException("Failed to create image"))
+			val image = imageInsertion.executeInsert().getOrElse(throw new SQLException("Failed to create image"))
 			val pendingInsert = SQL(
 				"""
 					INSERT INTO pending_image (image_id, notes, damage_indicator, degree_of_damage, user_id)
@@ -113,25 +113,24 @@ object Image {
 				"user" -> template.userId
 			)
 
-			if (pendingInsert.executeUpdate()(conn) != 1) throw new SQLException("Failed to add to pending")
-			conn.commit()
+			if (pendingInsert.executeUpdate() != 1) throw new SQLException("Failed to add to pending")
+			trans.commit()
 			Some(image)
 		} catch {
 			case e: SQLException =>
 				e.printStackTrace()
-				conn.rollback()
+				trans.rollback()
 				None
 			case e: Exception =>
 				e.printStackTrace()
-				conn.rollback()
+				trans.rollback()
 				None
 		}
 	}
 
-	def addToCollection(imageId: Long, collectionId: Long, fromCollectionId: Option[Long] = None) = 
-		DB.withTransaction { conn: java.sql.Connection => 
+	def addToCollection(imageId: Long, collectionId: Long, fromCollectionId: Option[Long] = None)(implicit trans: Connection = null) = ensuringTransaction { implicit trans =>
 
-		val maybePending = Image.pending(conn)(imageId)
+		val maybePending = Image.pending(imageId)
 
 		if (maybePending.isDefined) {
 			val pending = maybePending.get
@@ -144,7 +143,7 @@ object Image {
 				"imageId" -> imageId
 			)
 
-			if (1 != deletePending.executeUpdate()(conn)) {
+			if (1 != deletePending.executeUpdate()) {
 				throw new SQLException("Failed to delete pending image")
 			}
 
@@ -161,11 +160,11 @@ object Image {
 				"dod" -> pending.degree
 			)
 
-			if (1 != addImage.executeUpdate()(conn)) {
+			if (1 != addImage.executeUpdate()) {
 				throw new SQLException("Failed to add image to collection")
 			}
 		} else {
-			val collections = Image.collections(conn)(imageId)
+			val collections = Image.collections(imageId)
 				
 			val (notes, di, dod) = if (fromCollectionId.isDefined) {
 				val damageProperties = SQL(
@@ -176,7 +175,7 @@ object Image {
 					"collectionId" -> fromCollectionId.get,
 					"image_id" -> imageId
 				)
-				val head = damageProperties()(conn).headOption
+				val head = damageProperties().headOption
 				head.map { row => 
 					import row.get
 					(
@@ -203,10 +202,10 @@ object Image {
 			)
 		}
 
-		conn.commit()
+		trans.commit()
 	}
 
-	def pending(conn: Connection)(imageId: Long): Option[Image] = {
+	def pending(imageId: Long)(implicit conn: Connection = null): Option[Image] = ensuringConnection { implicit conn =>
 		val maybePending = SQL(
 			"""
 				SELECT * FROM pending_image JOIN image ON pending_image.image_id = image.id 
@@ -216,7 +215,7 @@ object Image {
 			"imageId" -> imageId
 		)
 		
-		val images: Stream[SqlRow] = maybePending()(conn)		
+		val images: Stream[SqlRow] = maybePending()		
 		val head = images.headOption
 		head.map { row => 
 			import row.get
@@ -236,7 +235,7 @@ object Image {
 		}
 	}
 
-	def collections(conn: Connection)(imageId: Long): List[Long] = {
+	def collections(imageId: Long)(implicit conn: Connection = null): List[Long] = ensuringConnection { implicit conn =>
 		val selectCollections = SQL(
 			"""
 				SELECT UNIQUE(collection_id) FROM collection_image WHERE image_id = {imageId}
@@ -245,7 +244,7 @@ object Image {
 			"imageId" -> imageId
 		) 
 
-		val collections: Stream[SqlRow] = selectCollections()(conn) 
+		val collections: Stream[SqlRow] = selectCollections() 
 		collections.map { row => 
 			row.get[Long]("collection_id").get
 		}.toList
