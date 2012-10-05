@@ -13,17 +13,15 @@ case class Marker(
 
 object Marker {
 	
-	def all() = DB.withConnection { c =>
-		val selectAllMarkers = SQL(
-			"""
-				SELECT * FROM image;
-			"""
-		)
-
-		val rows = selectAllMarkers()(c)
-
-		rows.map { row =>
-			Marker(row[String]("location_description"), row[Double]("latitude"), row[Double]("longitude"))
-		}.toList
+	def all: List[Marker] = {
+		Image.all.filter(!_.pending).map { image =>
+			Marker(
+				image.lat,
+				image.long,
+				image.description
+			)
+		}
 	}
+
 }
+
