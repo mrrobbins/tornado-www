@@ -5,7 +5,7 @@ body { background-color: #efefef; }
 #sidebar { height: 100%; margin-right: 1px; display: none; }
 
 #address_panel {
-	margin-right: 10px;
+	margin-right: 25px;
 	margin-top: 0px;
 	height: 100%;
 	text-align: center;
