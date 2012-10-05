@@ -10,7 +10,7 @@ CREATE TABLE collection (
 	notes VARCHAR(10240) NOT NULL,
 	damage_indicator INTEGER NOT NULL,
 	degree_of_damage INTEGER NOT NULL,
-	FOREIGN KEY(primary_image_id) REFERENCES image(id),
+	FOREIGN KEY(primary_image_id) REFERENCES image(id)
 );
 
 # --- !Downs
