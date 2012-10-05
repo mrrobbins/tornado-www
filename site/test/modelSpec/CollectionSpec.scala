@@ -31,7 +31,7 @@ class CollectionSpec extends Specification {
 				1
 			)
 
-			val imageId = Image.insert(insertedImage).get
+			val imageId = Image.insert(insertedImage)
 
 			val insertedCollection = CollectionTemplate(
 				"123 Snows Ave",
@@ -43,7 +43,7 @@ class CollectionSpec extends Specification {
 				Nil
 			)
 
-			val collectionId = Collection.insert(insertedCollection).get
+			val collectionId = Collection.insert(insertedCollection)
 
 			Collection.all.exists { dbCollection =>
 				dbCollection.id == collectionId &&

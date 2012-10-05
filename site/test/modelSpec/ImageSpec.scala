@@ -92,7 +92,7 @@ class ImageSpec extends Specification {
 				1
 			)
 
-			val imageId = Image.insert(insertedImage).get
+			val imageId = Image.insert(insertedImage)
 
 			val fromDB = Image.pending(imageId).get
 			fromDB.pending && fromDB.id == imageId && fromDB.user == userId
@@ -114,7 +114,7 @@ class ImageSpec extends Specification {
 				1
 			)
 
-			val firstImage = Image.insert(insertedImage1).get
+			val firstImage = Image.insert(insertedImage1)
 
 			val insertedCollection = CollectionTemplate(
 				"234 Breezy Way",
@@ -126,7 +126,7 @@ class ImageSpec extends Specification {
 				Nil
 			)
 
-			val collectionId = Collection.insert(insertedCollection).get
+			val collectionId = Collection.insert(insertedCollection)
 
 			val insertedImage2 = ImageTemplate(
 				"/path2",
@@ -138,7 +138,7 @@ class ImageSpec extends Specification {
 				8
 			)
 
-			val secondImage = Image.insert(insertedImage2).get
+			val secondImage = Image.insert(insertedImage2)
 			Image.addToCollection(secondImage, collectionId)
 
 			Image.all.exists { image =>

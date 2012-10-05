@@ -36,7 +36,7 @@ case class ImageTemplate(
 
 object Image {
 
-	def all(implicit conn: Connection = null) = ensuringConnection { implicit conn =>
+	def all(implicit conn: Connection = null): List[Image] = ensuringConnection { implicit conn =>
 		val pendingQuery = SQL(
 			"""
 				SELECT * FROM image JOIN pending_image ON image.id = pending_image.image_id;
@@ -85,8 +85,7 @@ object Image {
 
 	}
 
-	def insert(template: ImageTemplate)(implicit trans: Connection = null): Option[Long] = ensuringTransaction { implicit trans =>
-		try {
+	def insert(template: ImageTemplate)(implicit trans: Connection = null): Long = ensuringTransaction { implicit trans =>
 			val imageInsertion = SQL(
 				"""
 					INSERT INTO image (picture_path, time_captured, latitude, longitude, user_id)
@@ -115,21 +114,11 @@ object Image {
 			)
 
 			if (pendingInsert.executeUpdate() != 1) throw new SQLException("Failed to add to pending")
-			trans.commit()
-			Some(image)
-		} catch {
-			case e: SQLException =>
-				e.printStackTrace()
-				trans.rollback()
-				None
-			case e: Exception =>
-				e.printStackTrace()
-				trans.rollback()
-				None
-		}
+
+			image
 	}
 
-	def addToCollection(imageId: Long, collectionId: Long, fromCollectionId: Option[Long] = None)(implicit trans: Connection = null) = ensuringTransaction { implicit trans =>
+	def addToCollection(imageId: Long, collectionId: Long, fromCollectionId: Option[Long] = None)(implicit trans: Connection = null): Unit = ensuringTransaction { implicit trans =>
 
 		val maybePending = Image.pending(imageId)
 
@@ -203,7 +192,6 @@ object Image {
 			)
 		}
 
-		trans.commit()
 	}
 
 	def pending(imageId: Long)(implicit conn: Connection = null): Option[Image] = ensuringConnection { implicit conn =>

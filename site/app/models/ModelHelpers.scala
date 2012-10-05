@@ -14,8 +14,17 @@ object ModelHelpers {
 	}
 
 	def ensuringTransaction[T](func: Connection => T)(implicit trans: Connection): T = {
-		if (trans == null || trans.getAutoCommit) DB.withTransaction(t => func(t))
-		else func(trans)
+		if (trans == null || trans.getAutoCommit) DB.withTransaction { t =>
+				try {
+					val res = func(t)
+					t.commit()
+					res
+				} catch {
+					case e: Exception =>
+						t.rollback()
+						throw e
+				}
+		} else func(trans)
 	}
 
 }

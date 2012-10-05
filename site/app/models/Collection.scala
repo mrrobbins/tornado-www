@@ -33,7 +33,7 @@ case class Collection(
 
 object Collection {
 
-	def insert(c: CollectionTemplate)(implicit trans: Connection = null): Option[Long] = ensuringTransaction { implicit trans =>
+	def insert(c: CollectionTemplate)(implicit trans: Connection = null): Long = ensuringTransaction { implicit trans =>
 		val newCollection = SQL(
 			"""
 				INSERT INTO collection (time_created, gps_address, address, location_description, notes, primary_image_id, damage_indicator, degree_of_damage) 
@@ -49,7 +49,6 @@ object Collection {
 			"degree" -> c.degreeOfDamage
 		)
 
-		try {
 			val priKey = newCollection.executeInsert().getOrElse(throw new SQLException("Failed to create collection"))
 
 			for (id <- c.secondaryImages :+ c.primaryImageId) {
@@ -57,21 +56,10 @@ object Collection {
 				Image.addToCollection(id, priKey)
 			}
 
-			trans.commit()
-			Some(priKey)
-		} catch {
-			case e: java.sql.SQLException => 
-				e.printStackTrace()
-				trans.rollback()
-				None
-			case e: Exception =>
-				e.printStackTrace()
-				trans.rollback()
-				None
-		}
+			priKey
 	}
 
-	def all(implicit conn: Connection = null) = ensuringConnection { implicit conn =>
+	def all(implicit conn: Connection = null): List[Collection] = ensuringConnection { implicit conn =>
 		assert(conn != null)
 		val query = SQL(
 			"""
