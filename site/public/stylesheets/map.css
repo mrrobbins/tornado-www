@@ -6,8 +6,10 @@ body { background-color: #efefef; }
 
 #address_panel {
 	margin-right: 10px;
+	margin-top: 0px;
 	height: 100%;
 	text-align: center;
+	clear: both;
 }
 #address_panel li { font-size: 12px; line-height: 16px; padding-top: .5em; padding-bottom: .5em;}
 #map_canvas { border-left-style: solid;  border-color: black; border-width: thin; height: 100%; }
@@ -25,7 +27,7 @@ body { background-color: #efefef; }
 }
 
 #results_heading {
-	clear: both;
+	margin-top: 0px;
 }
 
 #address_panel .icon-remove-sign {
