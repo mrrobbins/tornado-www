@@ -1,6 +1,7 @@
 
 package models
 
+import ModelHelpers._
 import play.api.Play.current
 import java.sql._
 import anorm._

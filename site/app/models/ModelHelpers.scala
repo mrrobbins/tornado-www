@@ -1,10 +1,12 @@
 
+package models
+
 import play.api.Play.current
 import java.sql._
 import anorm._
 import play.api.db.DB
 
-package object models {
+object ModelHelpers {
 
 	def ensuringConnection[T](func: Connection => T)(implicit conn: Connection): T = {
 		if (conn == null) DB.withConnection(implicit c => func(c))
