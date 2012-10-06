@@ -9,19 +9,23 @@ import play.api.Play.current
 case class Marker(
 	description: String,
 	latitude: Double,
-	longitude: Double
+	longitude: Double,
+	markerType: String
 )
 
 object Marker {
 	
 	def all: List[Marker] = {
-		Image.all.filter(!_.pending).map { image =>
+		val images = Image.all
+		val pending = images.filter(!_.pending).map { image =>
 			Marker(
 				image.notes,
 				image.lat,
-				image.long
+				image.long,
+				"standardImage"
 			)
 		}
+		pending
 	}
 
 }

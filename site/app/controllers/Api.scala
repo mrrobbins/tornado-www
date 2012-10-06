@@ -54,7 +54,8 @@ object Api extends Controller {
 			Map(
 				"name" -> toJson(marker.description), 
 				"lat" -> toJson(marker.latitude), 
-				"long" -> toJson(marker.longitude)
+				"long" -> toJson(marker.longitude),
+				"type" -> toJson(marker.markerType)
 			)
 		)
 

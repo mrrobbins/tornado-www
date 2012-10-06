@@ -28,9 +28,13 @@ body { background-color: #efefef; }
 
 #results_heading {
 	margin-top: 0px;
+	padding-left: 1em;
 }
 
 #address_panel .icon-remove-sign {
 	margin-top: 1em;
 }
 
+.selected-result {
+	font-weight: bold;
+}
