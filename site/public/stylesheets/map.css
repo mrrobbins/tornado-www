@@ -7,9 +7,8 @@ body { background-color: #efefef; }
 #address_panel {
 	margin-right: 25px;
 	margin-top: 0px;
-	height: 100%;
 	text-align: center;
-	clear: both;
+	clear: right;
 }
 #address_panel li { font-size: 12px; line-height: 16px; padding-top: .5em; padding-bottom: .5em;}
 #map_canvas { border-left-style: solid;  border-color: black; border-width: thin; height: 100%; }
