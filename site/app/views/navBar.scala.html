@@ -5,7 +5,7 @@
 @item(item: NavItem) = {
 	@if(selected.map(_.name == item.name).getOrElse(false)) {
 		<li class="active">
-			<a href="@item.url" class=active">@item.name</a>
+			<a href="@item.url" class="active">@item.name</a>
 		</li>
 	} else {
 		<li>
