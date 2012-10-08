@@ -13,6 +13,8 @@ GET				/api/images/addToCollection controllers.Api.addToCollection(imageId: Long
 
 GET		   /api/map/markers/all       controllers.Api.allMarkers
 
+GET		   /api/map/markers/balloon   controllers.Api.balloon(imageId: Long)
+
 GET      /photoqueue                controllers.Todo.todo
 
 # Map static resources from the /public folder to the /assets URL path

@@ -9,7 +9,7 @@ import play.api.db.DB
 object ModelHelpers {
 
 	def ensuringConnection[T](func: Connection => T)(implicit conn: Connection): T = {
-		if (conn == null) DB.withConnection(implicit c => func(c))
+		if (conn == null) DB.withConnection(func)
 		else func(conn)
 	}
 

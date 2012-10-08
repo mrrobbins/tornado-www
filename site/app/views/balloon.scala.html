@@ -1,0 +1,19 @@
+@(image: Image)
+
+<div>
+    <img src="@image.path" />
+		<p></p>
+		<p><strong>Coord {@image.lat, @image.long}</strong></p>
+    <p>
+			@if(image.notes.length <= 200) {
+				@image.notes
+			} else {
+				@{image.notes.take(197)+"..."}
+			}
+		</p>
+		<p>Damage Indicator: @image.indicator
+			<br/>
+			Degree of Damage: @image.degree
+		</p>
+</div>
+

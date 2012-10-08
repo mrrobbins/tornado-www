@@ -7,6 +7,7 @@ import play.api.db.DB
 import play.api.Play.current
 
 case class Marker(
+	id: Long,
 	description: String,
 	latitude: Double,
 	longitude: Double,
@@ -16,9 +17,9 @@ case class Marker(
 object Marker {
 	
 	def all: List[Marker] = {
-		val images = Image.all
-		val pending = images.filter(!_.pending).map { image =>
+		val pending = Image.all.filter(!_.pending).map { image =>
 			Marker(
+				image.id,
 				image.notes,
 				image.lat,
 				image.long,

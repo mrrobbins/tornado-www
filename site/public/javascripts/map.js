@@ -41,24 +41,26 @@ $(window).load(function() {
 		var searchText = $('#search_box')[0].value
 
 		if (searchText.length == 0) {
-
 			alert('Please enter a location');
-
 		} else {
-
 			$("#sidebar").show(100, function() {
 				resizeMap();
 			});
 
-			$('#search_form').unbind('submit')
+			searchFor(searchText);
 
+			// Reset submit action for subsequent form submissions
+			$('#search_form').unbind('submit')
 			$('#search_form').submit(function(eventObj) {
 				eventObj.preventDefault();
 
 				var searchText = $('#search_box')[0].value
 
-				if (searchText.length == 0) alert('Please enter a location');
-				else searchFor(searchText, map);
+				if (searchText.length == 0) {
+					alert('Please enter a location');
+				} else {
+					searchFor(searchText);
+				}
 
 			});
 
@@ -67,8 +69,6 @@ $(window).load(function() {
 					resizeMap();
 				});
 			});
-
-			searchFor(searchText, map);
 		}
 	});
 
@@ -76,6 +76,12 @@ $(window).load(function() {
 		$.getJSON("/api/map/markers/all", function(data) {
 			markerDescriptors = data.markers;
 			redrawMarkers();
+		});
+	}
+
+	function getMarkerBalloon(imageId, callback) {
+		$.getJSON("/api/map/markers/balloon?imageId="+imageId, function(balloon) {
+			callback(balloon.content);
 		});
 	}
 
@@ -131,6 +137,17 @@ $(window).load(function() {
 					position: pos,
 					title: desc.name
 				});
+
+				function markerClickHandler() {
+					getMarkerBalloon(desc.id, function(contentString) {
+						var infowindow = new google.maps.InfoWindow({
+							content: contentString
+						});
+						infowindow.open(map, marker);
+					});
+				}
+
+				google.maps.event.addListener(marker, 'click', markerClickHandler);
 				marker.setMap(map);
 				if (markers[desc.type] == undefined) markers[desc.type] = [];
 				markers[desc.type].push(marker)
@@ -139,13 +156,15 @@ $(window).load(function() {
 
 	function searchFor(searchString) {
 		geocodeAddress(searchString, function(results, status) {
-			console.log('here');
 			if (gcStatus.OK == status && results.length != 0) {
-				populateResultList(results, 0, map);
-				jumpToResult(results[0], map);
+				populateResultList(results, 0);
+				centerAndZoom(results[0]);
 				setResultMarker(results[0]);
 			} else {
-				fillResultArea("No Results")
+				var div = $(document.createElement("div"));
+				div.append("No Results");
+				div.addClass("center");
+				fillResultArea(div[0]);
 			}
 		});
 	};
@@ -156,8 +175,8 @@ $(window).load(function() {
 			return function (eventObj) {
 				eventObj.preventDefault();
 				console.log('clicked ' + index);
-				populateResultList(geocodingResults, index, map);
-				jumpToResult(geocodingResults[index], map);
+				populateResultList(geocodingResults, index);
+				centerAndZoom(geocodingResults[index]);
 				setResultMarker(geocodingResults[index]);
 			}
 		}
@@ -170,13 +189,14 @@ $(window).load(function() {
 			if (i == selectedIndex) {
 				result.addClass('selected-result');
 			}
+			// appends to every element in the set, of which there is one
 			li.append(result[0]);
 			list.append(li[0]);
 		}
 		fillResultArea(list[0]);
 	}
 
-	function jumpToResult(geocodingResult) {
+	function centerAndZoom(geocodingResult) {
 		var geom = geocodingResult.geometry
 		map.setCenter(geom.location);
 		map.fitBounds(geom.viewport);
@@ -217,5 +237,4 @@ function createResult(geocodingResult) {
 	result.append(geocodingResult.formatted_address);
 	return result;
 }
-
 

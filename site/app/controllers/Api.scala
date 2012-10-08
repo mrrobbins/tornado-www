@@ -52,6 +52,7 @@ object Api extends Controller {
 
 		val allMarkers = Marker.all.map(marker =>
 			Map(
+				"id" -> toJson(marker.id),
 				"name" -> toJson(marker.description), 
 				"lat" -> toJson(marker.latitude), 
 				"long" -> toJson(marker.longitude),
@@ -64,5 +65,15 @@ object Api extends Controller {
 		Ok(allMarkersJson)
 	}
 
+	def balloon(imageId: Long) = Action {
+		import Json.toJson
+
+		val image = Image.all.filter(image => image.id == imageId).head
+		val content = views.html.balloon(image).toString
+	
+		val contentJson = toJson(Map("content" -> toJson(content)))
+		
+		Ok(contentJson)	
+	}
 }
 
