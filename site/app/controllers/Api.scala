@@ -75,5 +75,15 @@ object Api extends Controller {
 		
 		Ok(contentJson)	
 	}
+
+	def imageUpload = Action(parse.multipartFormData) { request =>
+		request.body.files.foreach { file =>
+			import java.io.File
+			val filename = file.filename
+			val contentType = file.contentType
+			file.ref.moveTo(new File("/tmp/pending/" + filename)
+		}
+		Ok("Files uploaded sucessfully")
+	}
 }
 
