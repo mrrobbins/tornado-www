@@ -9,9 +9,16 @@ import play.api.data._
 import play.api.data.Forms._
 import play.api.data.format.Formats._
 import play.api.libs.json._
+import play.api.libs.MimeTypes
 import models._
 
 object Api extends Controller {
+
+	val extensions = {
+		val typeList = MimeTypes.types.toList
+		val swapped = typeList.map(_.swap)
+		swapped.sortBy(_._2.length).reverse
+	} toMap
 
 	def addToCollection(imageId: Long, collectionId: Long, fromCollectionId: Option[Long]) = {
 		Action { request => 
@@ -82,7 +89,10 @@ object Api extends Controller {
 			import scala.util.Random
 
 			val rand = new Random(System.currentTimeMillis())
-			val fileExt = file.filename.split("\\.").last.toLowerCase
+
+			val fileExt = file.contentType.map(extensions).getOrElse {
+				file.filename.split("\\.").lastOption.getOrElse("")
+			}
 
 			var filename = (rand.nextDouble()*1000000000000l).toLong
 			var tmpFile = new File("/tmp/pending/" + filename + "."+fileExt)
