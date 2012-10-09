@@ -15,6 +15,7 @@ GET		   /api/map/markers/all       controllers.Api.allMarkers
 
 GET		   /api/map/markers/balloon   controllers.Api.balloon(imageId: Long)
 
+GET			/api/images/upload					controllers.Api.imageUpload()
 GET      /photoqueue                controllers.Todo.todo
 
 # Map static resources from the /public folder to the /assets URL path
