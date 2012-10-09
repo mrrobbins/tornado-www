@@ -94,15 +94,15 @@ object Api extends Controller {
 				file.filename.split("\\.").lastOption.getOrElse("")
 			}
 
-			var filename = (rand.nextDouble()*1000000000000l).toLong
-			var tmpFile = new File("/tmp/pending/" + filename + "."+fileExt)
-
-			while (tmpFile.exists()) {
-				filename = (rand.nextDouble()*1000000000000l).toLong
-				tmpFile = new File("/tmp/pending/" + filename + "."+fileExt) 
+			val maxNumber = 1000000000000l
+			val potentialNames = Stream.continually {
+				var filename = (rand.nextDouble()*maxNumber).toLong
+				new File("/tmp/pending/" + filename + "."+fileExt)
 			}
 
-			file.ref.moveTo(tmpFile)
+			val name = potentialNames.distinct.take(10000).find(!_.exists).get
+
+			file.ref.moveTo(name)
 		}
 		Ok("Files uploaded sucessfully")
 	}
