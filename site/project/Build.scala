@@ -8,7 +8,8 @@ object ApplicationBuild extends Build {
     val appVersion      = "1.0-SNAPSHOT"
 
     val appDependencies = Seq(
-		"mysql" % "mysql-connector-java" % "5.1.21"
+		"mysql" % "mysql-connector-java" % "5.1.21",
+		"commons-io" % "commons-io" % "2.4"
     )
 
     val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(

@@ -79,9 +79,20 @@ object Api extends Controller {
 	def imageUpload = Action(parse.multipartFormData) { request =>
 		request.body.files.foreach { file =>
 			import java.io.File
-			val filename = file.filename
-			val contentType = file.contentType
-			file.ref.moveTo(new File("/tmp/pending/" + filename)
+			import scala.util.Random
+
+			val rand = new Random(System.currentTimeMillis())
+			val fileExt = file.filename.split("\\.").last.toLowerCase
+
+			var filename = (rand.nextDouble()*1000000000000l).toLong
+			var tmpFile = new File("/tmp/pending/" + filename + "."+fileExt)
+
+			while (tmpFile.exists()) {
+				filename = (rand.nextDouble()*1000000000000l).toLong
+				tmpFile = new File("/tmp/pending/" + filename + "."+fileExt) 
+			}
+
+			file.ref.moveTo(tmpFile)
 		}
 		Ok("Files uploaded sucessfully")
 	}
