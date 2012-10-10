@@ -1,4 +1,6 @@
 
+package test
+
 import play.api.test._
 import play.api.test.Helpers._
 import play.api.Play
@@ -6,7 +8,10 @@ import play.api.Play.current
 import play.api.db._
 import anorm._
 
-package object modelSpec {
+import org.scalatest.SuiteMixin
+import org.scalatest.Suite
+
+trait FakeApp extends SuiteMixin { self: Suite =>
 
 	/*** Alias UNIX_TIMESTAMP for h2
 	*/
@@ -26,13 +31,14 @@ package object modelSpec {
 	}
 
 
-	def appCode[T](func: => T): T = {
+	abstract override def withFixture(test: NoArgTest) {
 		Play.start(FakeApplication(additionalConfiguration = inMemoryDatabase()))
 		try {
 			insertTimestampAlias()
-			func
+			super.withFixture(test)
 		} finally {
 			Play.stop()
 		}
 	}
+
 }
