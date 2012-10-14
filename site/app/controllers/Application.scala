@@ -1,7 +1,9 @@
 package controllers
 
+import play.api.Play.current
 import play.api._
 import play.api.mvc._
+import play.api.cache._
 
 object Application extends Controller {
   
@@ -9,8 +11,10 @@ object Application extends Controller {
     Ok(views.html.index("Your new application is ready."))
   }
 
-  def map = Action {
-	  Ok(views.html.map())
-  }
+  def map = Cached("map.html") {
+		Action {
+			Ok(views.html.map())
+		}
+	}
   
 }
