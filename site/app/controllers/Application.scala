@@ -8,7 +8,7 @@ import play.api.cache._
 object Application extends Controller {
   
   def index = Action {
-    Ok(views.html.index("Your new application is ready."))
+		Redirect(routes.Application.map)
   }
 
   def map = Cached("map.html") {
