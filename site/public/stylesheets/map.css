@@ -24,14 +24,6 @@ body { background-color: #efefef; }
 #address_panel li { font-size: 12px; line-height: 16px; padding-top: .5em; padding-bottom: .5em;}
 #map_canvas { border-left-style: solid;  border-color: black; border-width: thin; height: 100%; }
 
-#content {
-	top: 41px;
-	bottom: 0;
-	right: 0;
-	left: 0;
-	position: absolute;
-}
-
 #map_canvas img {
 	max-width: none;
 }

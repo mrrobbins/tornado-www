@@ -11,9 +11,14 @@ import play.api.data.format.Formats._
 import play.api.libs.json._
 import play.api.libs.MimeTypes
 import models._
+import Json.toJson
 
 object Api extends Controller {
 
+	val imgHandler: ImageHandler = new LocalImageHandler
+
+	// Map (extension -> MimeType) is M:1
+	// Reverse mapping, filter to shortest ext for a given MimeType
 	val extensions = {
 		val typeList = MimeTypes.types.toList
 		val swapped = typeList.map(_.swap)
@@ -55,7 +60,6 @@ object Api extends Controller {
 	}
 
 	def allMarkers = Action {
-		import Json.toJson
 
 		val allMarkers = Marker.all.map(marker =>
 			Map(
@@ -73,7 +77,6 @@ object Api extends Controller {
 	}
 
 	def balloon(imageId: Long) = Action {
-		import Json.toJson
 
 		val image = Image.all.filter(image => image.id == imageId).head
 		val content = views.html.balloon(image).toString
@@ -84,27 +87,33 @@ object Api extends Controller {
 	}
 
 	def imageUpload = Action(parse.multipartFormData) { request =>
-		request.body.files.foreach { file =>
-			import java.io.File
-			import scala.util.Random
-
-			val rand = new Random(System.currentTimeMillis())
-
-			val fileExt = file.contentType.map(extensions).getOrElse {
-				file.filename.split("\\.").lastOption.getOrElse("")
-			}
-
-			val maxNumber = 1000000000000l
-			val potentialNames = Stream.continually {
-				var filename = (rand.nextDouble()*maxNumber).toLong
-				new File("/tmp/pending/" + filename + "."+fileExt)
-			}
-
-			val name = potentialNames.distinct.take(10000).find(!_.exists).get
-
-			file.ref.moveTo(name)
+		// remove missing or non-image mime types
+		val (imageFiles, errorFiles) = request.body.files.span(_.contentType.filter(_.startsWith("image/")).isDefined)
+		val fileNames = imageFiles.map { file =>
+			val size = file.ref.file.length
+			val name = imgHandler.store(file)
+			(name, size)
 		}
-		Ok("Files uploaded sucessfully")
+
+		val imageFileResponses = fileNames.map { case (name, size) => 
+			Json.toJson(Map(
+				"name" -> toJson(name),
+				"size" -> toJson(size),
+				"url" -> toJson(imgHandler.lookup(name)),
+				"thumbnail_url" -> toJson(imgHandler.lookup(name))
+			))
+		}
+
+		val errorFileResponses = errorFiles.map { file =>
+			Json.toJson(Map(
+				"name" -> toJson(file.filename),
+				"error" -> toJson("Not an image file!")
+			))
+		}
+
+		val result = Json.toJson(imageFileResponses++errorFileResponses)
+
+		Ok(result)
 	}
 }
 
