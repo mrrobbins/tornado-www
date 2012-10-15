@@ -89,18 +89,19 @@ object Api extends Controller {
 	def imageUpload = Action(parse.multipartFormData) { request =>
 		// remove missing or non-image mime types
 		val (imageFiles, errorFiles) = request.body.files.partition(_.contentType.filter(_.startsWith("image/")).isDefined)
-		val fileNames = imageFiles.map { file =>
+		val fileProperties = imageFiles.map { file =>
+			val name = file.filename
 			val size = file.ref.file.length
-			val name = imgHandler.store(file)
-			(name, size)
+			val path = imgHandler.store(file)
+			(name, path, size)
 		}
 
-		val imageFileResponses = fileNames.map { case (name, size) => 
+		val imageFileResponses = fileProperties.map { case (name, path, size) => 
 			Json.toJson(Map(
 				"name" -> toJson(name),
 				"size" -> toJson(size),
-				"url" -> toJson(imgHandler.lookup(name)),
-				"thumbnail_url" -> toJson(imgHandler.lookup(name))
+				"url" -> toJson(imgHandler.lookup(path)),
+				"thumbnail_url" -> toJson(imgHandler.lookup(path))
 			))
 		}
 
