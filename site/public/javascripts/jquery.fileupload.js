@@ -1,9 +1,11 @@
 /*
- * jQuery File Upload Plugin 5.17.6
+ * Based on jQuery File Upload Plugin 5.17.6
  * https://github.com/blueimp/jQuery-File-Upload
  *
- * Copyright 2010, Sebastian Tschan
+ * Original Work: Copyright 2010, Sebastian Tschan
  * https://blueimp.net
+ *
+ * Modifications: Copyright 2012, University of Alabama
  *
  * Licensed under the MIT license:
  * http://www.opensource.org/licenses/MIT
