@@ -57,15 +57,12 @@
                     <span>Add files...</span>
                     <input type="file" name="files[]" multiple>
                 </span>
+								<span style="padding: 1em"></span>
                 <button type="submit" class="btn btn-primary start">
                     <i class="icon-upload icon-white"></i>
                     <span>Upload</span>
                 </button>
-                <button type="reset" class="btn btn-warning cancel">
-                    <i class="icon-ban-circle icon-white"></i>
-                    <span>Cancel upload</span>
-                </button>
-                <button type="button" class="btn btn-danger delete">
+                <button type="button" class="btn btn-danger remove">
                     <i class="icon-trash icon-white"></i>
                     <span>Remove</span>
                 </button>
@@ -146,41 +143,15 @@
         {% } else { %}
             <td colspan="2"></td>
         {% } %}
-        <td class="delete">{% if (!i) { %}
+        <td class="remove">{% if (!i) { %}
             <button class="btn btn-danger">
                 <i class="icon-trash icon-white"></i>
                 <span>Remove</span>
             </button>
         {% } %}</td>
-    </tr>
-{% } %}
-</script>
-<!-- The template to display files available for download -->
-<script id="template-download" type="text/x-tmpl">
-{% for (var i=0, file; file=o.files[i]; i++) { %}
-    <tr class="template-download fade">
-        {% if (file.error) { %}
-            <td></td>
-            <td class="name"><span>{%=file.name%}</span></td>
-            <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
-            <td class="error" colspan="2"><span class="label label-important">Error</span> {%=file.error%}</td>
-        {% } else { %}
-            <td class="preview">{% if (file.thumbnail_url) { %}
-                <a href="{%=file.url%}" title="{%=file.name%}" rel="gallery" download="{%=file.name%}"><img src="{%=file.thumbnail_url%}"></a>
-            {% } %}</td>
-            <td class="name">
-                <a href="{%=file.url%}" title="{%=file.name%}" rel="{%=file.thumbnail_url&&'gallery'%}" download="{%=file.name%}">{%=file.name%}</a>
-            </td>
-            <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
-            <td colspan="2"></td>
-        {% } %}
-        <td class="delete">
-            <button class="btn btn-danger" data-type="{%=file.delete_type%}" data-url="{%=file.delete_url%}">
-                <i class="icon-trash icon-white"></i>
-                <span>Delete</span>
-            </button>
-            <input type="checkbox" name="delete" value="1">
-        </td>
+				<td class="multiselect">
+					<input type="checkbox" class="mutliselect">
+				</td>
     </tr>
 {% } %}
 </script>
