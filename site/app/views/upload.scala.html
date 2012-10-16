@@ -59,7 +59,7 @@
                 </span>
                 <button type="submit" class="btn btn-primary start">
                     <i class="icon-upload icon-white"></i>
-                    <span>Start upload</span>
+                    <span>Upload</span>
                 </button>
                 <button type="reset" class="btn btn-warning cancel">
                     <i class="icon-ban-circle icon-white"></i>
@@ -67,7 +67,7 @@
                 </button>
                 <button type="button" class="btn btn-danger delete">
                     <i class="icon-trash icon-white"></i>
-                    <span>Delete</span>
+                    <span>Remove</span>
                 </button>
                 <input style="margin-left: 10px" type="checkbox" class="toggle"><span class="help-inline">select all</span>
             </div>
@@ -140,16 +140,16 @@
             <td class="start">{% if (!o.options.autoUpload) { %}
                 <button class="btn btn-primary">
                     <i class="icon-upload icon-white"></i>
-                    <span>Start</span>
+                    <span>Upload</span>
                 </button>
             {% } %}</td>
         {% } else { %}
             <td colspan="2"></td>
         {% } %}
-        <td class="cancel">{% if (!i) { %}
-            <button class="btn btn-warning">
-                <i class="icon-ban-circle icon-white"></i>
-                <span>Cancel</span>
+        <td class="delete">{% if (!i) { %}
+            <button class="btn btn-danger">
+                <i class="icon-trash icon-white"></i>
+                <span>Remove</span>
             </button>
         {% } %}</td>
     </tr>
