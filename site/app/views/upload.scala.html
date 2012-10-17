@@ -134,23 +134,23 @@
             <td>
                 <div class="progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="bar" style="width:0%;"></div></div>
             </td>
-            <td class="start">{% if (!o.options.autoUpload) { %}
-                <button class="btn btn-primary">
+            <td>{% if (!o.options.autoUpload) { %}
+                <button class="start btn btn-primary">
                     <i class="icon-upload icon-white"></i>
                     <span>Upload</span>
                 </button>
-            {% } %}</td>
+            {% } %}
+						{% if (!i) { %}
+							<button class="remove btn btn-danger">
+									<i class="icon-trash icon-white"></i>
+									<span>Remove</span>
+							</button>
+						{% } %} </td>
         {% } else { %}
             <td colspan="2"></td>
         {% } %}
-        <td class="remove">{% if (!i) { %}
-            <button class="btn btn-danger">
-                <i class="icon-trash icon-white"></i>
-                <span>Remove</span>
-            </button>
-        {% } %}</td>
-				<td class="multiselect">
-					<input type="checkbox" class="mutliselect">
+				<td>
+					<input type="checkbox" class="multiselect">
 				</td>
     </tr>
 {% } %}

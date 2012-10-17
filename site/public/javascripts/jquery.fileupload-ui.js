@@ -570,22 +570,22 @@
             fileUploadButtonBar.find('.start')
                 .bind('click.' + ns, function (e) {
                     e.preventDefault();
-                    filesList.find('.multiselect input:checked').closest('tr')
-											.find('.start button').click();
+                    filesList.find('input.multiselect:checked').closest('tr')
+											.find('button.start').click();
                     fileUploadButtonBar.find('.toggle')
                         .prop('checked', false);
                 });
             fileUploadButtonBar.find('.remove')
                 .bind('click.' + ns, function (e) {
                     e.preventDefault();
-                    filesList.find('.multiselect input:checked').closest('tr')
-                        .find('.remove button').click();
+                    filesList.find('input.multiselect:checked').closest('tr')
+                        .find('button.remove').click();
                     fileUploadButtonBar.find('.toggle')
                         .prop('checked', false);
                 });
             fileUploadButtonBar.find('.toggle')
                 .bind('change.' + ns, function (e) {
-                    filesList.find('.remove input').prop(
+                    filesList.find('input.multiselect').prop(
                         'checked',
                         $(this).is(':checked')
                     );
@@ -604,13 +604,13 @@
             var eventData = {fileupload: this};
             this.options.filesContainer
                 .delegate(
-                    '.start button',
+                    'button.start',
                     'click.' + this.options.namespace,
                     eventData,
                     this._startHandler
                 )
                 .delegate(
-                    '.remove button',
+                    'button.remove',
                     'click.' + this.options.namespace,
                     eventData,
                     this._removeHandler
@@ -622,8 +622,8 @@
             var options = this.options;
             this._destroyButtonBarEventHandlers();
             options.filesContainer
-                .undelegate('.start button', 'click.' + options.namespace)
-                .undelegate('.remove button', 'click.' + options.namespace);
+                .undelegate('button.start', 'click.' + options.namespace)
+                .undelegate('button.remove', 'click.' + options.namespace);
             parentWidget.prototype._destroyEventHandlers.call(this);
         },
 
