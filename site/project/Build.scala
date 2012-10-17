@@ -9,7 +9,8 @@ object ApplicationBuild extends Build {
 
     val appDependencies = Seq(
       "mysql" % "mysql-connector-java" % "5.1.+",
-			"org.scalatest" %% "scalatest" % "2.0.+" % "test"
+			"org.scalatest" %% "scalatest" % "2.0.+" % "test",
+			"com.drewoaks" % "metadata-extractor" % 2.6.+"
     )
 
     val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(
