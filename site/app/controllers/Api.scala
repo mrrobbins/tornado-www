@@ -12,6 +12,7 @@ import play.api.libs.json._
 import play.api.libs.MimeTypes
 import models._
 import Json.toJson
+import java.io._
 
 object Api extends Controller {
 
@@ -86,33 +87,71 @@ object Api extends Controller {
 		Ok(contentJson)	
 	}
 
+	class GpsMetadataException(msg: String) extends RuntimeException(msg)
+
+	def imgMetadata(file: File): Map[String, Double] = {
+		import com.drew.imaging._
+		import com.drew.metadata.exif._
+		import com.drew.lang._
+
+		val metadata = ImageMetadataReader.readMetadata(file)
+		// obtain the Exif directory
+		val directory: GpsDirectory = metadata.getDirectory(classOf[GpsDirectory])
+
+		if (directory == null) throw new GpsMetadataException("No GPS info")
+
+		val gpsInfo: GeoLocation = directory.getGeoLocation()	
+
+		if (gpsInfo == null) throw new GpsMetadataException("No GPS info")
+
+		Map("latitude" -> gpsInfo.getLatitude, "longitude" -> gpsInfo.getLongitude)
+	}
+
 	def imageUpload = Action(parse.multipartFormData) { request =>
 		// remove missing or non-image mime types
 		val (imageFiles, errorFiles) = request.body.files.partition(_.contentType.filter(_.startsWith("image/")).isDefined)
-		val fileProperties = imageFiles.map { file =>
+		val fileStorageErrors = imageFiles.flatMap { file =>
 			val name = file.filename
 			val size = file.ref.file.length
-			val path = imgHandler.store(file)
-			(name, path, size)
+			val metadata = try {
+				Some(imgMetadata(file.ref.file))
+			} catch {
+				case gme: GpsMetadataException => None
+			}
+			if (metadata.isDefined) {
+				println("Gps data: lat:%f, lng:%f".format(metadata.get("latitude"), metadata.get("longitude")))
+			} else {
+				println("No Gps data")
+			}
+			try {
+				val path = imgHandler.store(file)
+				None
+			} catch {
+				case ioe: IOException => 
+					Some(Json.toJson(Map(
+						"name" -> toJson(file.filename),
+						"error" -> toJson("Failed to store image")
+					)))
+			}
 		}
 
-		val imageFileResponses = fileProperties.map { case (name, path, size) => 
-			Json.toJson(Map(
-				"name" -> toJson(name),
-				"size" -> toJson(size),
-				"url" -> toJson(imgHandler.lookup(path)),
-				"thumbnail_url" -> toJson(imgHandler.lookup(path))
-			))
-		}
+		/*val imageFileResponses = fileProperties.map { case (name, path, size) => */
+		/*	Json.toJson(Map(*/
+		/*		"name" -> toJson(name),*/
+		/*		"size" -> toJson(size),*/
+		/*		"url" -> toJson(imgHandler.lookup(path)),*/
+		/*		"thumbnail_url" -> toJson(imgHandler.lookup(path))*/
+		/*	))*/
+		/*}*/
 
-		val errorFileResponses = errorFiles.map { file =>
+		val fileTypeErrors = errorFiles.map { file =>
 			Json.toJson(Map(
 				"name" -> toJson(file.filename),
 				"error" -> toJson("Not an image file!")
 			))
 		}
 
-		val result = Json.toJson(imageFileResponses++errorFileResponses)
+		val result = Json.toJson(fileStorageErrors++fileTypeErrors)
 
 		Ok(result)
 	}
