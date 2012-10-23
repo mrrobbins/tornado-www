@@ -102,21 +102,17 @@ object Api extends Controller {
 		import java.util.Date
 
 		val metadata = ImageMetadataReader.readMetadata(file)
-		// obtain the Exif directory
-		val gpsDirectory: GpsDirectory = metadata.getDirectory(classOf[GpsDirectory])
-
-		val (latitude, longitude) = if (gpsDirectory != null) {
-			val gpsInfo: GeoLocation = gpsDirectory.getGeoLocation()	
-			val latitude = Option(gpsInfo).map(_.getLatitude)
-			val longitude = Option(gpsInfo).map(_.getLongitude)
-			(latitude, longitude)
-		} else {
-			(None, None)
-		}
 		
-		val dateDirectory: ExifSubIFDDirectory = metadata.getDirectory(classOf[ExifSubIFDDirectory])
-		val date: Date = dateDirectory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL);
-		val unixTimestamp = Option(date).map(_.getTime());	
+		// obtain the Exif directory
+		val gpsDirectory: Option[GpsDirectory] = Option(metadata.getDirectory(classOf[GpsDirectory]))
+
+		val gpsInfo = gpsDirectory.flatMap(d => Option(d.getGeoLocation()))
+		val latitude = gpsInfo.flatMap(g => Option(g.getLatitude()))
+		val longitude = gpsInfo.flatMap(g => Option(g.getLongitude()))
+		
+		val dateDirectory: Option[ExifSubIFDDirectory] = Option(metadata.getDirectory(classOf[ExifSubIFDDirectory]))
+		val date: Option[Date] = dateDirectory.flatMap(d => Option(d.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL)))
+		val unixTimestamp = date.flatMap(d => Option(d.getTime()));
 
 		ImageMetadata(latitude, longitude, unixTimestamp)
 	}
