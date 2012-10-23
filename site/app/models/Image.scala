@@ -10,7 +10,7 @@ import play.api.db.DB
 case class Image(
 	id: Long,
 	path: String,
-	time: Long,
+	time: Option[Long],
 	lat: Double,
 	long: Double,
 	user: Long,
@@ -26,9 +26,10 @@ case class Image(
 
 case class ImageTemplate(
 	path: String,
-	lat: Double,
-	long: Double,
+	lat: Option[Double],
+	long: Option[Double],
 	userId: Long,
+	time: Option[Long],
 	notes: String,
 	indicator: Int,
 	degree: Int
@@ -45,7 +46,7 @@ object Image {
 
 		val collectionQuery = SQL(
 			"""
-				SELECT * FROM image join collection_image  ON image.id = collection_image.image_id;
+				SELECT * FROM image JOIN collection_image ON image.id = collection_image.image_id;
 			"""
 		)
 
@@ -53,10 +54,10 @@ object Image {
 			Image(
 				row[Long]("id"),
 				row[String]("picture_path"),
-				row[Long]("time_captured"),
+				row[Option[Long]]("time_captured"),
 				row[Double]("latitude"),
 				row[Double]("longitude"),
-				row[Int]("user_id"),
+				row[Long]("user_id"),
 				row[String]("notes"),
 				row[Int]("damage_indicator"),
 				row[Int]("degree_of_damage"),
@@ -69,10 +70,10 @@ object Image {
 			Image(
 				row[Long]("id"),
 				row[String]("picture_path"),
-				row[Long]("time_captured"),
+				row[Option[Long]]("time_captured"),
 				row[Double]("latitude"),
 				row[Double]("longitude"),
-				row[Int]("user_id"),
+				row[Long]("user_id"),
 				row[String]("notes"),
 				row[Int]("damage_indicator"),
 				row[Int]("degree_of_damage"),
@@ -93,7 +94,7 @@ object Image {
 				"""
 			).on(
 					"path" -> template.path,
-					"time" -> 0,
+					"time" -> template.time,
 					"lat" -> template.lat,
 					"long" -> template.long,
 					"user" -> template.userId
@@ -209,15 +210,15 @@ object Image {
 		head.map { row => 
 			import row.get
 			Image(
-				get[Long]("image_id").get,
-				get[String]("picture_path").get,
-				get[Long]("time_captured").get,
-				get[Double]("latitude").get,
-				get[Double]("longitude").get,
-				get[Int]("user_id").get,
-				get[String]("notes").get,
-				get[Int]("damage_indicator").get,
-				get[Int]("degree_of_damage").get,
+				row[Long]("image_id"),
+				row[String]("picture_path"),
+				row[Option[Long]]("time_captured"),
+				row[Double]("latitude"),
+				row[Double]("longitude"),
+				row[Long]("user_id"),
+				row[String]("notes"),
+				row[Int]("damage_indicator"),
+				row[Int]("degree_of_damage"),
 				None,
 				true
 			)

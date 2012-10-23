@@ -8,7 +8,7 @@ import play.api.Play.current
 import java.sql._
 
 case class User(
-	id: Int,
+	id: Long,
 	name: String,
 	isAdmin: Boolean
 )
@@ -30,7 +30,7 @@ object User {
 
 		rows.map { row =>
 			User(
-				row[Int]("id"),
+				row[Long]("id"),
 				row[String]("username"),
 				row[Boolean]("admin")
 			)

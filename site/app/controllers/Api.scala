@@ -18,7 +18,7 @@ object Api extends Controller {
 
 	val imgHandler: ImageHandler = new LocalImageHandler
 
-	// Map (extension -> MimeType) is M:1
+	// default mapping (extension -> MimeType) is M:1
 	// Reverse mapping, filter to shortest ext for a given MimeType
 	val extensions = {
 		val typeList = MimeTypes.types.toList
@@ -89,22 +89,36 @@ object Api extends Controller {
 
 	class GpsMetadataException(msg: String) extends RuntimeException(msg)
 
-	def imgMetadata(file: File): Map[String, Double] = {
+	case class ImageMetadata(
+		latitude: Option[Double],
+		longitude: Option[Double],
+		time: Option[Long]
+	)
+
+	def imageMetadata(file: File): ImageMetadata = {
 		import com.drew.imaging._
 		import com.drew.metadata.exif._
 		import com.drew.lang._
+		import java.util.Date
 
 		val metadata = ImageMetadataReader.readMetadata(file)
 		// obtain the Exif directory
-		val directory: GpsDirectory = metadata.getDirectory(classOf[GpsDirectory])
+		val gpsDirectory: GpsDirectory = metadata.getDirectory(classOf[GpsDirectory])
 
-		if (directory == null) throw new GpsMetadataException("No GPS info")
+		val (latitude, longitude) = if (gpsDirectory != null) {
+			val gpsInfo: GeoLocation = gpsDirectory.getGeoLocation()	
+			val latitude = Option(gpsInfo).map(_.getLatitude)
+			val longitude = Option(gpsInfo).map(_.getLongitude)
+			(latitude, longitude)
+		} else {
+			(None, None)
+		}
+		
+		val dateDirectory: ExifSubIFDDirectory = metadata.getDirectory(classOf[ExifSubIFDDirectory])
+		val date: Date = dateDirectory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL);
+		val unixTimestamp = Option(date).map(_.getTime());	
 
-		val gpsInfo: GeoLocation = directory.getGeoLocation()	
-
-		if (gpsInfo == null) throw new GpsMetadataException("No GPS info")
-
-		Map("latitude" -> gpsInfo.getLatitude, "longitude" -> gpsInfo.getLongitude)
+		ImageMetadata(latitude, longitude, unixTimestamp)
 	}
 
 	def imageUpload = Action(parse.multipartFormData) { request =>
@@ -113,18 +127,26 @@ object Api extends Controller {
 		val fileStorageErrors = imageFiles.flatMap { file =>
 			val name = file.filename
 			val size = file.ref.file.length
-			val metadata = try {
-				Some(imgMetadata(file.ref.file))
-			} catch {
-				case gme: GpsMetadataException => None
-			}
-			if (metadata.isDefined) {
-				println("Gps data: lat:%f, lng:%f".format(metadata.get("latitude"), metadata.get("longitude")))
-			} else {
-				println("No Gps data")
-			}
+			val metadata: ImageMetadata = imageMetadata(file.ref.file)
+			// store with metadata
+			println("Metadata: time:%d, lat:%f, lng:%f".format(
+				metadata.time.getOrElse(-1l),
+				metadata.latitude.getOrElse(Double.NaN),
+				metadata.longitude.getOrElse(Double.NaN)
+			))
 			try {
 				val path = imgHandler.store(file)
+				val template: ImageTemplate = ImageTemplate(
+					path,
+					metadata.latitude,
+					metadata.longitude,
+					User.all.head.id,
+					metadata.time,
+					"",
+					1,
+					1
+				)
+				Image.insert(template)
 				None
 			} catch {
 				case ioe: IOException => 
@@ -134,15 +156,6 @@ object Api extends Controller {
 					)))
 			}
 		}
-
-		/*val imageFileResponses = fileProperties.map { case (name, path, size) => */
-		/*	Json.toJson(Map(*/
-		/*		"name" -> toJson(name),*/
-		/*		"size" -> toJson(size),*/
-		/*		"url" -> toJson(imgHandler.lookup(path)),*/
-		/*		"thumbnail_url" -> toJson(imgHandler.lookup(path))*/
-		/*	))*/
-		/*}*/
 
 		val fileTypeErrors = errorFiles.map { file =>
 			Json.toJson(Map(
