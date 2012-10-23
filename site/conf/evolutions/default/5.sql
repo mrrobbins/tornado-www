@@ -1,8 +1,8 @@
 # --- !Ups
 
 CREATE TABLE collection (
-	id INTEGER PRIMARY KEY AUTO_INCREMENT,
-	primary_image_id INTEGER,
+	id BIGINT PRIMARY KEY AUTO_INCREMENT,
+	primary_image_id BIGINT,
 	time_created INTEGER NOT NULL, -- UNIX time
 	gps_address VARCHAR(1024) NOT NULL,
 	address VARCHAR(1024) NOT NULL,
