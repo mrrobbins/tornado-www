@@ -1,4 +1,4 @@
-# Routes
+#Routes
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
@@ -20,7 +20,9 @@ GET			 /upload										controllers.Upload.page
 GET			/image/:filename						controllers.FileServer.get(filename: String)
 
 POST			/api/images/upload					controllers.Api.imageUpload
-GET      /photoqueue                controllers.Todo.todo
+
+GET      /photoqueue                controllers.Application.photoQueue
 
 # Map static resources from the /public folder to the /assets URL path
 GET      /assets/*file              controllers.Assets.at(path="/public", file)
+

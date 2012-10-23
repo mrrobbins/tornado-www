@@ -5,6 +5,7 @@ import data.format.Formats._
 import data.Forms._
 import play.api._
 import play.api.mvc._
+import play.api.mvc.BodyParsers.parse
 import play.api.data._
 import play.api.data.Forms._
 import play.api.data.format.Formats._
@@ -42,22 +43,42 @@ object Api extends Controller {
 		)
 	)
 
-	def createCollection = Action { request =>
-		val form = collectionForm.bindFromRequest()(request).get
-		val inserted = {
-			import form._
-			CollectionTemplate(
-				_1,
-				_2,
-				_3,
-				_4,
-				_5,
-				0l,
-				Nil
-			)
-		}
-		Collection.insert(inserted)	
-		Ok("success")
+	def createCollection = Action(parse.urlFormEncoded) { request =>
+		Ok(request.body.toString)	
+		// get the id for all images selected
+		val checkedRows = request.body.filter(row => row._2.contains("on")).keySet
+		val selectedImages = checkedRows.toSeq.map(_.toLong)
+		
+		val primaryImage = Image.pending(selectedImages.head).get
+		val newCollection = CollectionTemplate(
+			"[address]",
+			"[location_description]",
+			primaryImage.notes,
+			primaryImage.indicator,
+			primaryImage.degree,
+			primaryImage.id,
+			selectedImages.tail
+		)
+
+		Collection.insert(newCollection)
+
+		Redirect("/photoqueue")
+
+		/*val form = collectionForm.bindFromRequest()(request).get*/
+		/*val inserted = {*/
+		/*	import form._*/
+		/*	CollectionTemplate(*/
+		/*		_1,*/
+		/*		_2,*/
+		/*		_3,*/
+		/*		_4,*/
+		/*		_5,*/
+		/*		0l,*/
+		/*		Nil*/
+		/*	)*/
+		/*}*/
+		/*Collection.insert(inserted)	*/
+		/*Ok("success")*/
 	}
 
 	def allMarkers = Action {
@@ -113,6 +134,10 @@ object Api extends Controller {
 		val dateDirectory: Option[ExifSubIFDDirectory] = Option(metadata.getDirectory(classOf[ExifSubIFDDirectory]))
 		val date: Option[Date] = dateDirectory.flatMap(d => Option(d.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL)))
 		val unixTimestamp = date.flatMap(d => Option(d.getTime()));
+
+		assert(latitude != null)
+		assert(longitude != null)
+		assert(unixTimestamp != null)
 
 		ImageMetadata(latitude, longitude, unixTimestamp)
 	}

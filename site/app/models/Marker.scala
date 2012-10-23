@@ -9,8 +9,8 @@ import play.api.Play.current
 case class Marker(
 	id: Long,
 	description: String,
-	latitude: Double,
-	longitude: Double,
+	latitude: Option[Double],
+	longitude: Option[Double],
 	markerType: String
 )
 

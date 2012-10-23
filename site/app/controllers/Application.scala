@@ -16,5 +16,9 @@ object Application extends Controller {
 			Ok(views.html.map())
 		}
 	}
+
+	def photoQueue = Action {
+		Ok(views.html.photoQueue())	
+	}
   
 }
