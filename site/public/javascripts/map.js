@@ -130,7 +130,7 @@ $(window).load(function() {
 	function redrawMarkers() {
 
 			clearAllMarkers();
-			for (var i in markerDescriptors) {
+			function redraw(i){
 				var desc = markerDescriptors[i];
 				var pos = new google.maps.LatLng(desc.lat, desc.long);
 				var marker = new google.maps.Marker({
@@ -151,6 +151,9 @@ $(window).load(function() {
 				marker.setMap(map);
 				if (markers[desc.type] == undefined) markers[desc.type] = [];
 				markers[desc.type].push(marker)
+			}
+			for (var i in markerDescriptors) {
+				redraw(i);
 			}
 	}
 

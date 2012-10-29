@@ -4,12 +4,17 @@
 @import helper.twitterBootstrap._
 @import models._
 @import views.nav._
+@import java.util.Date
+@import java.text.DateFormat
+@import java.util.Locale
+@import config._
 
 <!DOCTYPE HTML>
 <html lang="en">
 <head>
 		<link rel="stylesheet" href="assets/stylesheets/bootstrap.css" />
 		<link rel="stylesheet" href="assets/stylesheets/nav.css" />
+		<link rel="stylesheet" href="assets/stylesheets/photoqueue.css" />
 </head>
 <body>
 @views.html.navBar(Some(NavBar.PhotoQueue), None)
@@ -17,11 +22,16 @@
 @helper.form(action = routes.Api.createCollection) {
 
 	<table class="table table-striped">
-		<tr><td>ID</td><td>Filename</td><td>Latitude</td><td>Longitude</td><td>Select</td></tr>
+		<tr><td></td><td>Time Taken</td><td>Time Uploaded</td><td>Latitude</td><td>Longitude</td><td>Select</td></tr>
 	@for(image <- Image.all.filter(_.pending)) {
 		<tr>
-			<td>@image.id</td>
-			<td>@image.path</td>
+			<td width="200px"><img src="@Config.imageHandler.lookup(image.path)"></td>
+			<td>@{ image.time.map{time => val date = new Date(time * 1000L)
+						 val df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.getDefault())
+						 df.format(date)}.getOrElse("")}</td>
+			<td>@{ val date = new Date(image.timeUploaded * 1000L)
+						 val df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.getDefault())
+						 df.format(date)}</td>
 			<td>@image.lat</td>
 			<td>@image.long</td>
 			<td><input type="checkbox" name=@image.id class="pending-selection">

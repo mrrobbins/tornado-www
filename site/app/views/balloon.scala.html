@@ -1,7 +1,8 @@
 @(image: Image)
+@import config._
 
 <div>
-    <img src="@image.path" />
+    <img src="@Config.imageHandler.lookup(image.path)" width="150px"/>
 		<p></p>
 		<p><strong>Coord {@image.lat, @image.long}</strong></p>
     <p>

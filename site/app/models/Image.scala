@@ -11,6 +11,7 @@ case class Image(
 	id: Long,
 	path: String,
 	time: Option[Long],
+	timeUploaded: Long,
 	lat: Option[Double],
 	long: Option[Double],
 	user: Long,
@@ -55,6 +56,7 @@ object Image {
 				row[Long]("id"),
 				row[String]("picture_path"),
 				row[Option[Long]]("time_captured"),
+				row[Long]("time_uploaded"),
 				row[Option[Double]]("latitude"),
 				row[Option[Double]]("longitude"),
 				row[Long]("user_id"),
@@ -71,6 +73,7 @@ object Image {
 				row[Long]("id"),
 				row[String]("picture_path"),
 				row[Option[Long]]("time_captured"),
+				row[Long]("time_uploaded"),
 				row[Option[Double]]("latitude"),
 				row[Option[Double]]("longitude"),
 				row[Long]("user_id"),
@@ -89,8 +92,8 @@ object Image {
 	def insert(template: ImageTemplate)(implicit trans: Connection = null): Long = ensuringTransaction { implicit trans =>
 			val imageInsertion = SQL(
 				"""
-					INSERT INTO image (picture_path, time_captured, latitude, longitude, user_id)
-					VALUES ({path}, {time}, {lat}, {long}, {user});
+					INSERT INTO image (picture_path, time_captured, time_uploaded, latitude, longitude, user_id)
+					VALUES ({path}, {time}, UNIX_TIMESTAMP(), {lat}, {long}, {user});
 				"""
 			).on(
 					"path" -> template.path,
@@ -213,6 +216,7 @@ object Image {
 				row[Long]("image_id"),
 				row[String]("picture_path"),
 				row[Option[Long]]("time_captured"),
+				row[Long]("time_uploaded"),
 				row[Option[Double]]("latitude"),
 				row[Option[Double]]("longitude"),
 				row[Long]("user_id"),
