@@ -1,1 +1,2 @@
-.table td {text-align: center;}
+img.thumbnail { display: inline:block; height: 15em; width: auto; }
+div.photo-area { float: left; margin: 5px; }
