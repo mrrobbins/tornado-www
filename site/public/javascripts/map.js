@@ -15,7 +15,7 @@ $(window).load(function() {
 	var map = new google.maps.Map($('#map_canvas')[0], mapOptions);
 
 	function resizeMap() {
-		google.maps.event.trigger(map, "resize");
+		google.maps.event.trigger(map, 'resize');
 	};
 
 	resizeMap();

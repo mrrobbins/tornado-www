@@ -25,7 +25,7 @@ object Api extends Controller {
 		val typeList = MimeTypes.types.toList
 		val swapped = typeList.map(_.swap)
 		swapped.sortBy(_._2.length).reverse
-	} toMap
+	}.toMap
 
 	def addToCollection(imageId: Long, collectionId: Long, fromCollectionId: Option[Long]) = {
 		Action { request => 
@@ -122,24 +122,27 @@ object Api extends Controller {
 		import com.drew.lang._
 		import java.util.Date
 
-		val metadata = ImageMetadataReader.readMetadata(file)
-		
-		// obtain the Exif directory
-		val gpsDirectory: Option[GpsDirectory] = Option(metadata.getDirectory(classOf[GpsDirectory]))
+		try {
+			val metadata = ImageMetadataReader.readMetadata(file)
+			// obtain the Exif directory
+			val gpsDirectory: Option[GpsDirectory] = Option(metadata.getDirectory(classOf[GpsDirectory]))
 
-		val gpsInfo = gpsDirectory.flatMap(d => Option(d.getGeoLocation()))
-		val latitude = gpsInfo.flatMap(g => Option(g.getLatitude()))
-		val longitude = gpsInfo.flatMap(g => Option(g.getLongitude()))
-		
-		val dateDirectory: Option[ExifSubIFDDirectory] = Option(metadata.getDirectory(classOf[ExifSubIFDDirectory]))
-		val date: Option[Date] = dateDirectory.flatMap(d => Option(d.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL)))
-		val unixTimestamp = date.flatMap(d => Option(d.getTime()));
+			val gpsInfo = gpsDirectory.flatMap(d => Option(d.getGeoLocation()))
+			val latitude = gpsInfo.flatMap(g => Option(g.getLatitude()))
+			val longitude = gpsInfo.flatMap(g => Option(g.getLongitude()))
+			
+			val dateDirectory: Option[ExifSubIFDDirectory] = Option(metadata.getDirectory(classOf[ExifSubIFDDirectory]))
+			val date: Option[Date] = dateDirectory.flatMap(d => Option(d.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL)))
+			val unixTimestamp = date.flatMap(d => Option(d.getTime()));
 
-		assert(latitude != null)
-		assert(longitude != null)
-		assert(unixTimestamp != null)
+			assert(latitude != null)
+			assert(longitude != null)
+			assert(unixTimestamp != null)
 
-		ImageMetadata(latitude, longitude, unixTimestamp)
+			ImageMetadata(latitude, longitude, unixTimestamp)
+		} catch {
+			case ipe: ImageProcessingException => ImageMetadata(None, None, None)
+		}
 	}
 
 	def imageUpload = Action(parse.multipartFormData) { request =>

@@ -12,24 +12,36 @@
 <!DOCTYPE HTML>
 <html lang="en">
 <head>
+		<script type="text/javascript" src="assets/javascripts/jquery-1.8.1.js"></script>
+		<script type="text/javascript" src="assets/javascripts/photo-queue.js"></script>
 		<link rel="stylesheet" href="assets/stylesheets/bootstrap.css" />
 		<link rel="stylesheet" href="assets/stylesheets/nav.css" />
 		<link rel="stylesheet" href="assets/stylesheets/photoqueue.css" />
 </head>
 <body>
 @views.html.navBar(Some(NavBar.PhotoQueue), None)
-<div id="content">
-@helper.form(action = routes.Api.createCollection) {
-
-	<div>
+<div id="content" class="container">
+<div class="page-header">
+		<button class="add-btn btn btn-success header-btn">Add to Collection</button>
+		<h1>Add Photos to Collections</h1>
+</div>
+<div class="well container">
+@helper.form(action = routes.Api.createCollection, 'id -> "selection_form") {
+	<ul>
 	@for(image <- Image.all.filter(_.pending)) {
-		<div class="stack photo-area"><img src="@Config.imageHandler.lookup(image.path)" class="thumbnail"></div>
+		<li>
+		<div class="gallery-container">
+			<div class="thumbnail">
+				<img src="@Config.imageHandler.lookup(image.path)">
+				<input class="checkbox" type="checkbox" name=@image.id>
+				<a href="#" class="icon-info-sign icon-white edit"></a>
+			</div>
+		</div>
+		</li>
 	}
-	</div>
-
-
-	<input type="submit" value="Add to collection" class="btn-primary">
+	</ul>
 }
+</div>
 </div>
 </body>
 </html>
