@@ -27,7 +27,9 @@ class LocalImageHandler extends ImageHandler {
 		// will fail after Int.MaxValue if none are found
 		val outputFile = potentialNames.distinct.take(Int.MaxValue).find(!_.exists).get
 		file.ref.moveTo(outputFile)
-		outputFile.getName
+		val outputFilename = outputFile.getName
+		ImageThumbnailer.createThumbnail(outputFile, outputFilename)
+		outputFilename
 	}
 
 	def lookup(key: String): String = {
