@@ -32,8 +32,12 @@ class LocalImageHandler extends ImageHandler {
 		outputFilename
 	}
 
-	def lookup(key: String): String = {
+	def lookupImage(key: String): String = {
 		"/image/" + key
+	}
+
+	def lookupThumb(key: String): String = {
+		ImageThumbnailer.lookup(key)
 	}
 }
 

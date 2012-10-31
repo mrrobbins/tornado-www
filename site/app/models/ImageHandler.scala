@@ -7,7 +7,8 @@ import play.api.mvc.MultipartFormData.FilePart
 trait ImageHandler {
 
 	def store(file: FilePart[TemporaryFile]): String
-	def lookup(key: String): String
+	def lookupImage(key: String): String
+	def lookupThumb(key: String): String
 
 }
 

@@ -17,7 +17,9 @@ GET		   /api/map/markers/balloon   controllers.Api.balloon(imageId: Long)
 
 GET			 /upload										controllers.Upload.page
 
-GET			/image/:filename						controllers.FileServer.get(filename: String)
+GET			/image/:filename						controllers.FileServer.getImage(filename: String)
+
+GET			/image/thumb/:filename				controllers.FileServer.getThumb(filename: String)
 
 POST			/api/images/upload					controllers.Api.imageUpload
 

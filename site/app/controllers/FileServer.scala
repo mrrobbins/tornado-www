@@ -16,9 +16,15 @@ import models._
 
 object FileServer extends Controller{
 	
-	def get(filename: String) = Action { 
+	def getImage(filename: String) = Action { 
 		Ok.sendFile(
 			content = new java.io.File("/tmp/pending/" + filename)
+		)
+	}	
+
+	def getThumb(filename: String) = Action { 
+		Ok.sendFile(
+			content = new java.io.File("/tmp/pending/thumbnails/" + filename)
 		)
 	}	
 }
