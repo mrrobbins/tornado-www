@@ -25,11 +25,9 @@
 <title>Upload Photos</title>
 <meta name="viewport" content="width=device-width">
 <!-- Bootstrap CSS Toolkit styles -->
-<link rel="stylesheet" href="http://blueimp.github.com/cdn/css/bootstrap.min.css">
+<link rel="stylesheet" href="/assets/stylesheets/bootstrap.css">
 <!-- Generic page styles -->
 <link rel="stylesheet" href="/assets/stylesheets/style.css">
-<!-- Bootstrap styles for responsive website layout, supporting different screen sizes -->
-<link rel="stylesheet" href="http://blueimp.github.com/cdn/css/bootstrap-responsive.min.css">
 <!-- Bootstrap CSS fixes for IE6 -->
 <!--[if lt IE 7]><link rel="stylesheet" href="http://blueimp.github.com/cdn/css/bootstrap-ie6.min.css"><![endif]-->
 <!-- Bootstrap Image Gallery styles -->
@@ -42,7 +40,7 @@
 </head>
 <body>
 		@views.html.navBar(Some(NavBar.PhotoUpload), None)(Some(user))
-<div class="container">
+<div class="content container">
     <div class="page-header">
         <h1>Upload New Photos</h1>
     </div>
@@ -175,15 +173,10 @@
 <script src="http://blueimp.github.com/JavaScript-Load-Image/load-image.min.js"></script>
 <!-- The Canvas to Blob plugin is included for image resizing functionality -->
 <script src="http://blueimp.github.com/JavaScript-Canvas-to-Blob/canvas-to-blob.min.js"></script>
-<!-- Bootstrap JS and Bootstrap Image Gallery are not required, but included for the demo -->
-<script src="http://blueimp.github.com/cdn/js/bootstrap.min.js"></script>
-<script src="http://blueimp.github.com/Bootstrap-Image-Gallery/js/bootstrap-image-gallery.min.js"></script>
 <!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
 <script src="/assets/javascripts/jquery.iframe-transport.js"></script>
 <!-- The basic File Upload plugin -->
 <script src="/assets/javascripts/jquery.fileupload.js"></script>
-<!-- The File Upload file processing plugin -->
-<script src="/assets/javascripts/jquery.fileupload-fp.js"></script>
 <!-- The File Upload user interface plugin -->
 <script src="/assets/javascripts/jquery.fileupload-ui.js"></script>
 <!-- The main application script -->
