@@ -20,10 +20,16 @@
 			<form id="search_form" class="navbar-search" >
 					<input type="text" id="search_box" class="search-query span2" placeholder="@searchText.get" />
 			</form>
+		} else {
+			<form id="search_form" class="navbar-search invisible" >
+					<input type="text" id="search_box" class="search-query span2" placeholder="" />
+			</form>
 		}
 		<ul class="nav">
 			@if(searchText.isDefined) {
 				<li class="divider-vertical"></li>
+			} else {
+				<li class="divider-vertical invisible"></li>
 			}
 			@NavBar.headerItems.map(item)
 		</ul>
