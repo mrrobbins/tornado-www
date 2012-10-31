@@ -11,7 +11,7 @@ object ApplicationBuild extends Build {
       "mysql" % "mysql-connector-java" % "5.1.+",
 			"org.scalatest" %% "scalatest" % "2.0.+" % "test",
 			"com.drewnoakes" % "metadata-extractor" % "2.6.+",
-			"org.swinglabs.swingx" % "swingx-graphics" % "1.6.+"
+			"org.imgscalr" % "imgscalr-lib" % "4.2"
     )
 
     val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(
