@@ -10,28 +10,34 @@ import play.api.libs.json._
 
 object Accounts extends Controller with LoginLogout with Auth with AuthConfigImpl {
 
+
 	def loginForm() = optionalUserAction { implicit maybeUser => implicit request =>
 		Ok(views.html.login())
 	}
 
+	case class LoginFormData(email: String, password: String)
+
 	def loginSubmit() = Action { implicit request => 
-		def success(form: (String, String)) = {
-			import form._
+		def success(data: LoginFormData) = {
 			try {
-				val user = User(form._1, form._2)
+				val user = User(data.email, data.password)
 				gotoLoginSucceeded(user.id)
 			} catch {
-				case _: Exception => Redirect("/login").flashing("message" -> "Invalid username or password", "styleClass" -> "red")
+				case _: Exception =>
+					val flashSession = flash + ("message" -> "Invalid email or password") + ("styleClass" -> "red")
+					val form = Some(userLoginForm.fill(data.copy(password="")))
+					BadRequest(views.html.login(form)(flashSession))
 			}
 		}
-		def failure(form: Form[(String, String)]) = {
+		def failure(form: Form[LoginFormData]) = {
 			val json = form.errorsAsJson.asInstanceOf[JsObject]
 			val error = json \ "" match {
 				case _: JsUndefined => (json \ json.keys.head)(0).as[String]
 				case value: JsArray => value(0).as[String]
 				case _ => "Bad data"
 			}
-			Redirect("/login").flashing("message" -> error)
+			val flashSession= flash + ("message" -> error) + ("styleClass" -> "red")
+			InternalServerError(views.html.login(Some(form))(flashSession))
 		}
 
 		userLoginForm.bindFromRequest().fold(failure, success)
@@ -42,10 +48,10 @@ object Accounts extends Controller with LoginLogout with Auth with AuthConfigImp
 	}
 
 	val userLoginForm = Form(
-		tuple(
+		mapping(
 			"email" -> email,
 			"password" -> text
-		)
+		)(LoginFormData.apply)(LoginFormData.unapply)
 	)
 
 	case class SignupFormData(
