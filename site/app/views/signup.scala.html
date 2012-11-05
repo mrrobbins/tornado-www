@@ -1,5 +1,7 @@
-@()(implicit flash: Flash, maybeUser: Option[models.User])
+@(maybeForm: Option[Form[controllers.Accounts.SignupFormData]] = None)(implicit flash: Flash)
 @import views.nav._
+@import models._
+@import controllers._
 
 <!DOCTYPE html>
 <html lang="en">
@@ -26,18 +28,18 @@
 						}
 						<form action="/signup" method="post">
 							<fieldset>
-							@flash.get("formData").map(_.split(",")).map { f => 	
+							@maybeForm.map { f =>
 								<div class="clearfix">
-									<input type="text" name="fname" placeholder="First Name" value="@f(0)">
+									<input type="text" name="fname" placeholder="First Name" value="@f("fname").value">
 								</div>
 								<div class="clearfix">
-									<input type="text" name="lname" placeholder="Last Name" value="@f(1)">
+									<input type="text" name="lname" placeholder="Last Name" value="@f("lname").value">
 								</div>
 								<div class="clearfix">
-									<input type="email" name="email" placeholder="Email" value="@f(2)">
+									<input type="email" name="email" placeholder="Email" value="@f("email").value">
 								</div>
 								<div class="clearfix">
-									<input type="email" name="email2" placeholder="Confirm Email" value="@f(3)">
+									<input type="email" name="email2" placeholder="Confirm Email" value="@f("email2").value">
 								</div>
 								<div class="clearfix">
 									<input type="password" name="password" placeholder="Password">

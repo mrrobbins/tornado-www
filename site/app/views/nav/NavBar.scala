@@ -32,7 +32,7 @@ object NavOptUser {
 	implicit def direct(implicit o: Option[User]): NavOptUser =
 		new OptUser(o)
 	
-	val NoUser = OptUser(None)
+	val NoUser: NavOptUser = new OptUser(None)
 
 }
 
