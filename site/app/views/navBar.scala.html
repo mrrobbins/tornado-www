@@ -1,4 +1,4 @@
-@(selected: Option[views.nav.NavItem] = None, searchText: Option[String] = None)(implicit maybeUser: Option[models.User])
+@(selected: Option[views.nav.NavItem] = None, searchText: Option[String] = None)(implicit optUser: views.nav.NavOptUser)
 
 @import views.nav._
 
@@ -34,7 +34,7 @@
 			@NavBar.headerItems.map(item)
 		</ul>
 		<ul class="nav pull-right">
-			@maybeUser.map {	user => 
+			@optUser.maybeUser.map { user => 
 				@item(NavItem(user.email, ""))
 			}.getOrElse {
 				@item(NavBar.Login)
