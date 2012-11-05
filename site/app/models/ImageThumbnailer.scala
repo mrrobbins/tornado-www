@@ -33,8 +33,6 @@ object ImageThumbnailer {
 			original.flush()
 
 			val surplus = rescaled.getWidth - 600
-			println(rescaled.getWidth)
-			println(surplus / 2)
 			val cropped = Scalr.crop(rescaled, surplus / 2, 0, 600, 600)
 			rescaled.flush()
 			cropped

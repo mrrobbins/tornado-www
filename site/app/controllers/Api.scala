@@ -147,7 +147,6 @@ object Api extends Controller with Auth with AuthConfigImpl {
 	}
 
 	def imageUpload = authorizedAction(parse.multipartFormData, NormalUser) { implicit user => implicit request =>
-		println(user.toString)
 		// remove missing or non-image mime types
 		val (imageFiles, errorFiles) = request.body.files.partition(_.contentType.filter(_.startsWith("image/")).isDefined)
 		val fileStorageErrors = imageFiles.flatMap { file =>
@@ -155,11 +154,6 @@ object Api extends Controller with Auth with AuthConfigImpl {
 			val size = file.ref.file.length
 			val metadata: ImageMetadata = imageMetadata(file.ref.file)
 			// store with metadata
-			println("Metadata: time:%d, lat:%f, lng:%f".format(
-				metadata.time.getOrElse(-1l),
-				metadata.latitude.getOrElse(Double.NaN),
-				metadata.longitude.getOrElse(Double.NaN)
-			))
 			try {
 				val path = imgHandler.store(file)
 				val template: ImageTemplate = ImageTemplate(
