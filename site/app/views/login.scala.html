@@ -1,4 +1,4 @@
-@(maybeForm: Option[Form[controllers.Accounts.LoginFormData]]=None)(implicit flash: Flash)
+@(form: Form[controllers.Accounts.LoginFormData]=controllers.Accounts.userLoginForm)(implicit flash: Flash)
 @import views.nav._
 
 <!DOCTYPE html>
@@ -27,11 +27,7 @@
 						<form action="/login" method="post">
 							<fieldset>
 								<div class="clearfix">
-										@maybeForm.map { f =>
-											<input type="email" name="email" placeholder="Email" value="@f("email").value">
-										}.getOrElse {
-											<input type="email" name="email" placeholder="Email">
-										}
+									<input type="email" name="email" placeholder="Email" value="@form("email").value">
 								</div>
 								<div class="clearfix">
 									<input type="password" name="password" placeholder="Password">

@@ -25,7 +25,7 @@ object Accounts extends Controller with LoginLogout with Auth with AuthConfigImp
 			} catch {
 				case _: Exception =>
 					val flashSession = flash + ("message" -> "Invalid email or password") + ("styleClass" -> "red")
-					val form = Some(userLoginForm.fill(data.copy(password="")))
+					val form = userLoginForm.fill(data.copy(password=""))
 					BadRequest(views.html.login(form)(flashSession))
 			}
 		}
@@ -37,7 +37,7 @@ object Accounts extends Controller with LoginLogout with Auth with AuthConfigImp
 				case _ => "Bad data"
 			}
 			val flashSession= flash + ("message" -> error) + ("styleClass" -> "red")
-			InternalServerError(views.html.login(Some(form))(flashSession))
+			InternalServerError(views.html.login(form)(flashSession))
 		}
 
 		userLoginForm.bindFromRequest().fold(failure, success)
@@ -98,11 +98,12 @@ object Accounts extends Controller with LoginLogout with Auth with AuthConfigImp
 				Redirect("/login").flashing("message" -> "Account succesfully created", "styleClass" -> "green")
 			} catch {
 				case _: Exception =>
-					val form = Some(createAccountForm.fill(data))
+					val form = createAccountForm.fill(data)
 					val flashSession = flash + ("message" -> "Failed to create account")
 					InternalServerError(views.html.signup(form)(flashSession))
 			}
 		}
+
 		def failure(form: Form[SignupFormData]) = {
 			val json = form.errorsAsJson.asInstanceOf[JsObject]
 			val error = json \ "" match {
@@ -110,7 +111,7 @@ object Accounts extends Controller with LoginLogout with Auth with AuthConfigImp
 				case value: JsArray => value(0).as[String]
 				case _ => "Bad data"
 			}
-			BadRequest(views.html.signup(Some(form))(flash + ("message" -> error)))
+			BadRequest(views.html.signup(form)(flash + ("message" -> error)))
 		}
 
 		createAccountForm.bindFromRequest().fold(failure, success)
