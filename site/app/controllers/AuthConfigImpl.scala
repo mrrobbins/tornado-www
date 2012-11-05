@@ -70,7 +70,7 @@ trait AuthConfigImpl extends AuthConfig {
    * If the user is not logged in and tries to access a protected resource then redirct them as follows:
    */
   def authenticationFailed[A](request: Request[A]): PlainResult =
-		Redirect(routes.Accounts.loginForm).flashing(
+		Redirect("/login").flashing(
 			"message" -> "Please Log In",
 			"styleClass" -> "red"
 		)

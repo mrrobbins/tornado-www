@@ -17,11 +17,11 @@ GET		   /api/map/markers/balloon   controllers.Api.balloon(imageId: Long)
 
 GET			 /upload										controllers.Upload.page
 
-GET			/login											controllers.Accounts.loginForm
+GET			/login											controllers.Accounts.login
 
 POST		/login											controllers.Accounts.loginSubmit
 
-GET			/signup											controllers.Accounts.signupForm
+GET			/signup											controllers.Accounts.signup
 
 POST		/signup										controllers.Accounts.signupSubmit
 
