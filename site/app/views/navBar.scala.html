@@ -1,4 +1,9 @@
-@(selected: Option[views.nav.NavItem] = None, searchText: Option[String] = None)(implicit optUser: views.nav.NavOptUser)
+@(
+	selected: Option[views.nav.NavItem] = None,
+	searchText: Option[String] = None
+)(
+	implicit optUser: views.nav.NavOptUser = views.nav.NavOptUser.NoUser
+)
 
 @import views.nav._
 
