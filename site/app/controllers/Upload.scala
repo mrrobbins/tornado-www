@@ -13,11 +13,13 @@ import play.api.data.format.Formats._
 import play.api.libs.json._
 import play.api.libs.MimeTypes
 import models._
+import jp.t2v.lab.play20.auth._
 
-object Upload extends Controller{
+object Upload extends Controller with Auth with AuthConfigImpl {
 
-	def page() = Cached("upload.page") {
-		Action { Ok(views.html.upload()) }	
-	}
+	/*def page = Cached("upload.page") {*/
+	def page = authorizedAction(NormalUser) { implicit user => implicit request =>
+		Ok(views.html.upload()) 
+	}	
 }
 

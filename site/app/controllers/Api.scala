@@ -14,8 +14,9 @@ import play.api.libs.MimeTypes
 import models._
 import Json.toJson
 import java.io._
+import jp.t2v.lab.play20.auth._
 
-object Api extends Controller {
+object Api extends Controller with Auth with AuthConfigImpl {
 
 	val imgHandler: ImageHandler = new LocalImageHandler
 
@@ -145,7 +146,8 @@ object Api extends Controller {
 		}
 	}
 
-	def imageUpload = Action(parse.multipartFormData) { request =>
+	def imageUpload = authorizedAction(parse.multipartFormData, NormalUser) { implicit user => implicit request =>
+		println(user.toString)
 		// remove missing or non-image mime types
 		val (imageFiles, errorFiles) = request.body.files.partition(_.contentType.filter(_.startsWith("image/")).isDefined)
 		val fileStorageErrors = imageFiles.flatMap { file =>

@@ -17,6 +17,14 @@ GET		   /api/map/markers/balloon   controllers.Api.balloon(imageId: Long)
 
 GET			 /upload										controllers.Upload.page
 
+GET			/login											controllers.Accounts.loginForm
+
+POST		/login											controllers.Accounts.loginSubmit
+
+GET			/signup											controllers.Accounts.signupForm
+
+POST		/signup										controllers.Accounts.signupSubmit
+
 GET			/image/:filename						controllers.FileServer.getImage(filename: String)
 
 GET			/image/thumb/:filename				controllers.FileServer.getThumb(filename: String)

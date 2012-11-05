@@ -1,4 +1,4 @@
-@()
+@()(implicit user: models.User)
 
 @import controllers.Api.collectionForm
 @import helper.twitterBootstrap._
@@ -8,6 +8,7 @@
 @import java.text.DateFormat
 @import java.util.Locale
 @import config._
+
 
 <!DOCTYPE HTML>
 <html lang="en">
@@ -19,7 +20,7 @@
 		<link rel="stylesheet" href="assets/stylesheets/photoqueue.css" />
 </head>
 <body>
-@views.html.navBar(Some(NavBar.PhotoQueue), None)
+@views.html.navBar(Some(NavBar.PhotoQueue), None)(Some(user))
 <div id="content" class="container">
 <div class="page-header">
 		<button class="add-btn btn btn-success header-btn">Add to Collection</button>

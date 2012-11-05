@@ -1,0 +1,45 @@
+@()(implicit flash: Flash, maybeUser: Option[models.User])
+@import views.nav._
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Login</title>
+
+    <link href="/assets/stylesheets/bootstrap.css" rel="stylesheet">
+		<link rel="stylesheet" href="/assets/stylesheets/nav.css" />
+    <link href="/assets/stylesheets/login.css" rel="stylesheet">
+</head>
+<body>
+@views.html.navBar(Some(NavBar.Login), None)
+	<div class="content">
+		<div class="container">
+			<div class="login-box">
+				<div class="row">
+					<div class="login-form">
+						<h2>Login</h2>
+						@flash.get("message").map { message => 
+							<h5 class="@flash.get("styleClass").get">
+								@message
+							</h5>
+						}
+						<form action="/login" method="post">
+							<fieldset>
+								<div class="clearfix">
+									<input type="email" name="email" placeholder="Email">
+								</div>
+								<div class="clearfix">
+									<input type="password" name="password" placeholder="Password">
+								</div>
+								<button class="btn btn-primary" type="submit">Sign in</button>
+								<a id="create_account_link" href="/signup">Create an account</a>
+							</fieldset>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div> <!-- /container -->
+</body>
+</html>
