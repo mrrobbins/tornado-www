@@ -11,7 +11,7 @@ import play.api.libs.json._
 object Accounts extends Controller with LoginLogout with Auth with AuthConfigImpl {
 
 
-	def login() = optionalUserAction { implicit maybeUser => implicit request =>
+	def login() = Action { implicit request =>
 		Ok(views.html.login())
 	}
 
@@ -43,7 +43,7 @@ object Accounts extends Controller with LoginLogout with Auth with AuthConfigImp
 		userLoginForm.bindFromRequest().fold(failure, success)
 	}
 
-	def signup() = optionalUserAction { implicit maybeUser => implicit request =>
+	def signup() = Action { implicit request =>
 		Ok(views.html.signup())
 	}
 
