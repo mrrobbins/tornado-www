@@ -69,7 +69,11 @@ trait AuthConfigImpl extends AuthConfig {
   /**
    * If the user is not logged in and tries to access a protected resource then redirct them as follows:
    */
-  def authenticationFailed[A](request: Request[A]): PlainResult = Redirect(routes.Accounts.loginForm)
+  def authenticationFailed[A](request: Request[A]): PlainResult =
+		Redirect(routes.Accounts.loginForm).flashing(
+			"message" -> "Please Log In",
+			"styleClass" -> "red"
+		)
 //    At 0.4-SNAPSHOT or grator, the signature becomes the following.
 //    def authenticationFailed(request: RequestHeader): PlainResult = Redirect(routes.Application.login)
 
