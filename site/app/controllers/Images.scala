@@ -7,6 +7,8 @@ import jp.t2v.lab.play20.auth._
 import java.io._
 import play.api.libs.json._
 import play.api.libs.json.Json.toJson
+import play.api.libs.concurrent.Akka
+import play.api.Play.current
 
 object Images extends Controller with Auth with AuthConfigImpl {
 
@@ -27,30 +29,33 @@ object Images extends Controller with Auth with AuthConfigImpl {
 			collectionId: Long,
 			fromCollectionId: Option[Long]
 		) = authorizedAction(NormalUser) { implicit user => implicit request => 
+			Async { Akka.future {
 				Ok(Image.addToCollection(imageId, collectionId).toString)
+			} }
 		}
 
 		def createCollection = Action(parse.urlFormEncoded) { request =>
-			Ok(request.body.toString)	
 			// get the id for all images selected
 			val checkedRows =
 				request.body.filter(row => row._2.contains("on")).keySet
 			val selectedImages = checkedRows.toSeq.map(_.toLong)
 			
-			val primaryImage = Image.pending(selectedImages.head).get
-			val newCollection = CollectionTemplate(
-				"[address]",
-				"[location_description]",
-				primaryImage.notes,
-				primaryImage.indicator,
-				primaryImage.degree,
-				primaryImage.id,
-				selectedImages.tail
-			)
+			Async { Akka.future {
+				val primaryImage = Image.pending(selectedImages.head).get
+				val newCollection = CollectionTemplate(
+					"[address]",
+					"[location_description]",
+					primaryImage.notes,
+					primaryImage.indicator,
+					primaryImage.degree,
+					primaryImage.id,
+					selectedImages.tail
+				)
 
-			Collection.insert(newCollection)
+				Collection.insert(newCollection)
 
-			Redirect("/photoqueue")
+				Redirect("/photoqueue")
+			} }
 
 		}
 
@@ -63,7 +68,7 @@ object Images extends Controller with Auth with AuthConfigImpl {
 				val (imageFiles, errorFiles) = request.body.files.partition(
 						_.contentType.filter(_.startsWith("image/")).isDefined
 				)
-				val fileStorageErrors = imageFiles.flatMap { file =>
+				val futureFileStorageErrors = Akka.future { imageFiles.flatMap { file =>
 					val name = file.filename
 					val size = file.ref.file.length
 					val metadata: ImageMetadata = imageMetadata(file.ref.file)
@@ -92,7 +97,7 @@ object Images extends Controller with Auth with AuthConfigImpl {
 								"error" -> toJson("Failed to store image")
 							)))
 					}
-				}
+				} }
 
 				val fileTypeErrors = errorFiles.map { file =>
 					Json.toJson(Map(
@@ -101,9 +106,11 @@ object Images extends Controller with Auth with AuthConfigImpl {
 					))
 				}
 
-				val result = Json.toJson(fileStorageErrors++fileTypeErrors)
+				Async { futureFileStorageErrors.map { fileStorageErrors =>
+					val result = Json.toJson(fileStorageErrors++fileTypeErrors)
+					Ok(result)
+				} }
 
-				Ok(result)
 			}
 
 	}
