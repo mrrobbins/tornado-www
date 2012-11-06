@@ -8,12 +8,9 @@ import org.imgscalr.Scalr
 import org.imgscalr.Scalr._
 
 object ImageThumbnailer {
-	val path = "/tmp/pending/thumbnails/"
-	val img_width = 600;
 
-	def createThumbnail(file: File, filename: String) = {
-		val outputPath = path + filename
-		val original: BufferedImage = ImageIO.read(file)
+	def createThumbnail(input: File, output: File) = {
+		val original: BufferedImage = ImageIO.read(input)
 
 		val tooTall = original.getWidth < original.getHeight
 		
@@ -39,12 +36,9 @@ object ImageThumbnailer {
 
 		}
 
-		ImageIO.write(square, "jpg", new File(outputPath))
+		ImageIO.write(square, "jpg", output)
 		square.flush()
 	}
 
-	def lookup(key: String): String = {
-		"/image/thumb/" + key
-	}
 }
 

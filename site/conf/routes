@@ -25,9 +25,7 @@ GET 	/signup                     controllers.Accounts.signup
 
 POST	/signup                     controllers.Accounts.signupSubmit
 
-GET 	/image/:filename            controllers.FileServer.getImage(filename: String)
-
-GET 	/image/thumb/:filename      controllers.FileServer.getThumb(filename: String)
+GET 	/data/*path                  controllers.FileServer.serve(path: String)
 
 POST	/api/images/upload          controllers.Images.Api.uploadImage
 

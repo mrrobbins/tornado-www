@@ -7,7 +7,6 @@ import jp.t2v.lab.play20.auth._
 import java.io._
 import play.api.libs.json._
 import play.api.libs.json.Json.toJson
-import models.ImageHandler
 
 object Images extends Controller with Auth with AuthConfigImpl {
 
@@ -70,7 +69,10 @@ object Images extends Controller with Auth with AuthConfigImpl {
 					val metadata: ImageMetadata = imageMetadata(file.ref.file)
 					// store with metadata
 					try {
-						val path = ImageHandler().store(file)
+						val tmpFile = File.createTempFile("img_thumb", ".jpg")
+						ImageThumbnailer.createThumbnail(file.ref.file, tmpFile)
+						val path = StorageBackend().store("images", file.ref.file, file.contentType)
+						StorageBackend().store("thumbnails", tmpFile, Some("image/jpg"), Some(path))
 						val template: ImageTemplate = ImageTemplate(
 							path,
 							metadata.latitude,

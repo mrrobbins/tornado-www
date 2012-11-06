@@ -2,7 +2,7 @@
 @import models._
 
 <div>
-    <img src="@ImageHandler().lookupThumb(image.path)" width="150px"/>
+    <img src="@StorageBackend().lookup("thumbnails", image.path)" width="150px"/>
 		<p></p>
 		<p><strong>Coord {@image.lat, @image.long}</strong></p>
     <p>

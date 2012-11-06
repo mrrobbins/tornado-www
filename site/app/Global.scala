@@ -4,7 +4,7 @@ import play.api._
 
 object Global extends GlobalSettings {
 	override def onStart(app: Application) {
-		models.ImageHandler() // initialize/verify ImageHandler in config
+		models.StorageBackend() // initialize/verify ImageHandler in config
 	}
 
 	override def onStop(app: Application) {

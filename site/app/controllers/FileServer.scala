@@ -1,31 +1,41 @@
 
 package controllers
 
-import data.format.Formats._
-import data.Forms._
-import play.api.cache._
+import play.api.Play
+import play.api.Logger
 import play.api.Play.current
-import play.api._
-import play.api.mvc._
-import play.api.data._
-import play.api.data.Forms._
-import play.api.data.format.Formats._
-import play.api.libs.json._
-import play.api.libs.MimeTypes
+import play.api.Play.configuration
+import java.io.File
 import models._
+import play.api.mvc._
 
 object FileServer extends Controller{
-	
-	def getImage(filename: String) = Action { 
-		Ok.sendFile(
-			content = new java.io.File("/tmp/pending/" + filename)
-		)
-	}	
 
-	def getThumb(filename: String) = Action { 
-		Ok.sendFile(
-			content = new java.io.File("/tmp/pending/thumbnails/" + filename)
-		)
-	}	
+	val storageDirectory = {
+		val path = configuration.getString("storage.path").getOrElse {
+			Logger.error(
+				"No storage path specified. Please specify a path in application.conf"
+			)
+			Play.stop()
+			sys.exit(1)
+		}
+		val file = new File(path)
+		if (!file.exists)
+		file.mkdirs()
+		file
+	}.getCanonicalFile
+	
+	def serve(path: String) = Action { 
+		val file = new java.io.File(storageDirectory, path).getCanonicalFile
+		val parents = Stream.iterate(file)(_.getParentFile).takeWhile(_ != null)
+		if (parents contains storageDirectory) {
+			Ok.sendFile(
+				content = new java.io.File(storageDirectory, path)
+			)
+		} else {
+			Forbidden("Access Denied")
+		}
+	}
+
 }
 
