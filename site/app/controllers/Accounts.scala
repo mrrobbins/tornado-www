@@ -1,5 +1,6 @@
 package controllers
 
+import play.api.Play.current
 import play.api.mvc._
 import jp.t2v.lab.play20.auth._
 import play.api.data.Forms._
@@ -7,6 +8,7 @@ import play.api.data.Form
 import models.User
 import models.UserTemplate
 import play.api.libs.json._
+import play.api.libs.concurrent.Akka
 
 object Accounts extends Controller with LoginLogout with Auth with AuthConfigImpl {
 
@@ -18,11 +20,11 @@ object Accounts extends Controller with LoginLogout with Auth with AuthConfigImp
 	case class LoginFormData(email: String, password: String)
 
 	def loginSubmit() = Action { implicit request => 
-		def success(data: LoginFormData) = {
-			try {
+		def success(data: LoginFormData) = Async {
+			Akka.future {
 				val user = User(data.email, data.password)
 				gotoLoginSucceeded(user.id)
-			} catch {
+			} recover {
 				case _: Exception =>
 					val flashSession = flash + ("message" -> "Invalid email or password") + ("styleClass" -> "red")
 					val form = userLoginForm.fill(data.copy(password=""))
@@ -90,13 +92,13 @@ object Accounts extends Controller with LoginLogout with Auth with AuthConfigImp
 	)
 
 	def signupSubmit() = Action { implicit request =>
-		def success(data: SignupFormData) = {
+		def success(data: SignupFormData) = Async {
 			import data._
 			val newUser = UserTemplate(email, password, fname, lname, false)
-			try {
+			Akka.future {
 				User.insert(newUser)
 				Redirect("/login").flashing("message" -> "Account succesfully created", "styleClass" -> "green")
-			} catch {
+			} recover {
 				case _: Exception =>
 					val form = createAccountForm.fill(data)
 					val flashSession = flash + ("message" -> "Failed to create account")
