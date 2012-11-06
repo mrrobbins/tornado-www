@@ -8,6 +8,7 @@ import play.api.Play.configuration
 import java.io.File
 import models._
 import play.api.mvc._
+import play.api.libs.concurrent.Akka
 
 object FileServer extends Controller{
 
@@ -29,9 +30,11 @@ object FileServer extends Controller{
 		val file = new java.io.File(storageDirectory, path).getCanonicalFile
 		val parents = Stream.iterate(file)(_.getParentFile).takeWhile(_ != null)
 		if (parents contains storageDirectory) {
-			Ok.sendFile(
-				content = new java.io.File(storageDirectory, path)
-			)
+			Async { Akka.future {
+				Ok.sendFile(
+					content = new java.io.File(storageDirectory, path)
+				)
+			} }
 		} else {
 			Forbidden("Access Denied")
 		}
