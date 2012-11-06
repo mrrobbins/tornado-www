@@ -3,36 +3,36 @@
 # ~~~~
 
 # Home page
-GET       /                         controllers.Application.index
+GET 	/                           controllers.Maps.page
 
-GET       /map                      controllers.Application.map
+GET 	/map                        controllers.Maps.page
 
-POST	    /api/collections/new      controllers.Api.createCollection
+POST	/api/collections/new        controllers.Images.Api.createCollection
 
-GET				/api/images/addToCollection controllers.Api.addToCollection(imageId: Long, collectionId: Long, fromCollectionId: Option[Long])
+GET 	/api/images/addToCollection controllers.Images.Api.addToCollection(imageId: Long, collectionId: Long, fromCollectionId: Option[Long])
 
-GET		   /api/map/markers/all       controllers.Api.allMarkers
+GET 	/api/map/markers/all        controllers.Maps.Api.allMarkers
 
-GET		   /api/map/markers/balloon   controllers.Api.balloon(imageId: Long)
+GET 	/api/map/markers/balloon    controllers.Maps.Api.balloon(imageId: Long)
 
-GET			 /upload										controllers.Upload.page
+GET 	/upload                     controllers.Images.uploadPage
 
-GET			/login											controllers.Accounts.login
+GET 	/login                      controllers.Accounts.login
 
-POST		/login											controllers.Accounts.loginSubmit
+POST	/login                      controllers.Accounts.loginSubmit
 
-GET			/signup											controllers.Accounts.signup
+GET 	/signup                     controllers.Accounts.signup
 
-POST		/signup										controllers.Accounts.signupSubmit
+POST	/signup                     controllers.Accounts.signupSubmit
 
-GET			/image/:filename						controllers.FileServer.getImage(filename: String)
+GET 	/image/:filename            controllers.FileServer.getImage(filename: String)
 
-GET			/image/thumb/:filename				controllers.FileServer.getThumb(filename: String)
+GET 	/image/thumb/:filename      controllers.FileServer.getThumb(filename: String)
 
-POST			/api/images/upload					controllers.Api.imageUpload
+POST	/api/images/upload          controllers.Images.Api.uploadImage
 
-GET      /photoqueue                controllers.Application.photoQueue
+GET 	/photoqueue                 controllers.Images.queuePage
 
 # Map static resources from the /public folder to the /assets URL path
-GET      /assets/*file              controllers.Assets.at(path="/public", file)
+GET 	/assets/*file               controllers.Assets.at(path="/public", file)
 

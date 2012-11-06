@@ -1,8 +1,8 @@
 @(image: Image)
-@import config._
+@import models._
 
 <div>
-    <img src="@Config.imageHandler.lookupThumb(image.path)" width="150px"/>
+    <img src="@ImageHandler().lookupThumb(image.path)" width="150px"/>
 		<p></p>
 		<p><strong>Coord {@image.lat, @image.long}</strong></p>
     <p>

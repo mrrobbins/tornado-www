@@ -5,14 +5,15 @@ import java.io.File
 import scala.util.Random
 import play.api.libs.Files.TemporaryFile
 import play.api.mvc.MultipartFormData.FilePart
-import controllers.Api.extensions
+import data.FileTypes._
+import play.api.Configuration
 
-class LocalImageHandler extends ImageHandler {
+class LocalImageHandler(c: Configuration) extends ImageHandler {
 	val rand = new Random(System.currentTimeMillis())
-	val path = "/tmp/pending/"
+	val path = c.getString("storagepath").getOrElse(throw new Exception("No storagepath specified. Please specify a storagepath in application.conf"))
 
 	def store(file: FilePart[TemporaryFile]): String = {
-		val fileExt = file.contentType.flatMap(extensions.get).getOrElse {
+		val fileExt = file.contentType.flatMap(Extensions.get).getOrElse {
 			file.filename.split("\\.").drop(1).lastOption.getOrElse("")
 		}
 

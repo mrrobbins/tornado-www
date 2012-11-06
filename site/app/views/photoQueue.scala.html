@@ -1,13 +1,12 @@
 @()(implicit user: models.User)
 
-@import controllers.Api.collectionForm
 @import helper.twitterBootstrap._
 @import models._
 @import views.nav._
 @import java.util.Date
 @import java.text.DateFormat
 @import java.util.Locale
-@import config._
+@import models._
 
 
 <!DOCTYPE HTML>
@@ -27,13 +26,13 @@
 		<h1>Add Photos to Collections</h1>
 </div>
 <div class="well container">
-@helper.form(action = routes.Api.createCollection, 'id -> "selection_form") {
+<form action="/api/collections/new" method="post" id="selection_form">
 	<ul>
 	@for(image <- Image.all.filter(_.pending)) {
 		<li>
 		<div class="gallery-container">
 			<div class="thumbnail">
-				<img src="@Config.imageHandler.lookupThumb(image.path)">
+				<img src="@ImageHandler().lookupThumb(image.path)">
 				<input class="checkbox" type="checkbox" name=@image.id>
 				<a href="#" class="icon-info-sign icon-white edit"></a>
 			</div>
@@ -41,7 +40,6 @@
 		</li>
 	}
 	</ul>
-}
 </div>
 </div>
 </body>
