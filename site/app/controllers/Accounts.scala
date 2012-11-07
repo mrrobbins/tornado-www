@@ -13,6 +13,8 @@ import play.api.libs.concurrent.Akka
 object Accounts extends Controller with LoginLogout with Auth with AuthConfigImpl {
 
 
+	/** Handles requests for the login page
+	  */
 	def login() = Action { implicit request =>
 		Ok(views.html.login())
 	}

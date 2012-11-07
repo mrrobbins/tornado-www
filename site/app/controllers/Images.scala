@@ -116,12 +116,22 @@ object Images extends Controller with Auth with AuthConfigImpl {
 	}
 
 
+	/** Data type representing the relevant metadata from an image file
+	  * @param latitude the latitude from the image (if present) in degrees
+	  * @param longitude the longitude from the image (if present) in degrees
+	  * @param time the capture time from the image (if present) in milliseconds since the Unix epoch
+	  */
 	case class ImageMetadata(
 		latitude: Option[Double],
 		longitude: Option[Double],
 		time: Option[Long]
 	)
 
+	/** Extract image metadata from a jpeg file
+	  * @param file the file to extract the data from
+	  * @return the extracted data
+	  * @todo handle more image types
+	  */
 	def imageMetadata(file: File): ImageMetadata = {
 		import com.drew.imaging._
 		import com.drew.metadata.exif._
@@ -146,7 +156,8 @@ object Images extends Controller with Auth with AuthConfigImpl {
 				Option(d.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL))
 			}
 
-			val unixTimestamp = date.flatMap(d => Option(d.getTime()));
+			// Actually in milliseconds, as is the Java way
+			val unixTimestamp = date.flatMap(d => Option(d.getTime()))
 
 			assert(latitude != null)
 			assert(longitude != null)
