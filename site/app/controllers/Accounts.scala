@@ -19,6 +19,10 @@ object Accounts extends Controller with LoginLogout with Auth with AuthConfigImp
 		Ok(views.html.login())
 	}
 
+  /** Holds the data from a login form
+    * @param email the email address that the user supplied
+    * @param password the password that the user supplied (unhashed! don't store!)
+    */
 	case class LoginFormData(email: String, password: String)
 
 	def loginSubmit() = Action { implicit request => 
@@ -62,6 +66,14 @@ object Accounts extends Controller with LoginLogout with Auth with AuthConfigImp
 		)(LoginFormData.apply)(LoginFormData.unapply)
 	)
 
+  /** Holds the data from a signup form
+    * @param fname the supplied first name
+    * @param lname the supplied last name
+    * @param email the supplied email address
+    * @param email2 the supplied email address confirmation
+    * @param password the password that the user supplied (unhashed! don't store!)
+    * @param password2 the supplied password confirmation (unhashed! don't store!)
+    */
 	case class SignupFormData(
 		fname: String,
 		lname: String,

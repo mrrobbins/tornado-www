@@ -25,6 +25,9 @@ object FileServer extends Controller{
 		file
 	}.getCanonicalFile
 	
+	/* Serve a file from the storage directory
+	 * @param a path within the storage directory
+	 */
 	def serve(path: String) = Action { 
 		// if path contains ../ notation, could request file outside of valid dirs
 		// construct a file handle from storageDirectory and path
