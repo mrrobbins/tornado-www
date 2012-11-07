@@ -121,7 +121,7 @@ object User {
 
 	/** Retrieve a list of all users in the database
 	  * @param user `UserTemplate` that describes the fields the inserted user should have
-	  * @param conn database transaction to (re)use; one will be created null or a non-transaction (regular connection) is received
+	  * @param trans database transaction to (re)use; one will be created null or a non-transaction (regular connection) is received
 	  * @throws SQLException the insertion failed
 	  */
 	def insert(user: UserTemplate)(implicit trans: Connection = null) = ensuringTransaction { implicit trans =>
@@ -147,8 +147,8 @@ object User {
 	  * @param email email address, which scopes the password change request to a give user
 	  * @param oldPass the user's current password (not hashed! don't store!)
 	  * @param newPass the desired new password (not hashed! don't store in this form!)
-	  * @param conn database transaction to (re)use; one will be created null or a non-transaction (regular connection) is received
-	  * @throws SQLException the password change failed (probably due to incorrect `email` or `oldPass`
+	  * @param trans database transaction to (re)use; one will be created null or a non-transaction (regular connection) is received
+	  * @throws SQLException the password change failed (probably due to incorrect `email` or `oldPass`)
 	  */
 	def changePassword(email: String, oldPass: String, newPass: String)(implicit trans: Connection = null) = ensuringTransaction { implicit trans => 
 		val user = User(email, oldPass) 
