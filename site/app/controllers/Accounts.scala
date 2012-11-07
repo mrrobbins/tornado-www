@@ -39,7 +39,11 @@ object Accounts extends Controller with LoginLogout with Auth with AuthConfigImp
 				case _ => "Bad data"
 			}
 			val flashSession= flash + ("message" -> error) + ("styleClass" -> "red")
-			InternalServerError(views.html.login(form)(flashSession))
+
+			//Remove password field from form (security)
+			val formValues = form.data - "password"
+			val modForm = form.bind(formValues)
+			InternalServerError(views.html.login(modForm)(flashSession))
 		}
 
 		userLoginForm.bindFromRequest().fold(failure, success)

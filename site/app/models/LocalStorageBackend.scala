@@ -54,6 +54,5 @@ class LocalStorageBackend(c: Configuration) extends StorageBackend {
 	def fetch(bucket: String, key: String): File = {
 		new File(path + "/" + bucket + "/" + key)
 	}
-
 }
 

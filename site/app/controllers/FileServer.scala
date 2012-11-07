@@ -21,18 +21,21 @@ object FileServer extends Controller{
 			sys.exit(1)
 		}
 		val file = new File(path)
-		if (!file.exists)
-		file.mkdirs()
+		if (!file.exists) file.mkdirs()
 		file
 	}.getCanonicalFile
 	
 	def serve(path: String) = Action { 
-		val file = new java.io.File(storageDirectory, path).getCanonicalFile
+		// if path contains ../ notation, could request file outside of valid dirs
+		// construct a file handle from storageDirectory and path
+		val file = new File(storageDirectory, path).getCanonicalFile
+
 		val parents = Stream.iterate(file)(_.getParentFile).takeWhile(_ != null)
+		// verify file's path still child of storageDirectory (request is within valid dirs)
 		if (parents contains storageDirectory) {
 			Async { Akka.future {
 				Ok.sendFile(
-					content = new java.io.File(storageDirectory, path)
+					content = new File(storageDirectory, path)
 				)
 			} }
 		} else {

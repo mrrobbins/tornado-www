@@ -23,7 +23,7 @@ trait StorageBackend {
 
 object StorageBackend {
 
-	private val handler = {
+	private val backend = {
 		val backendConfig = configuration.getConfig("storage").getOrElse {
 			Logger.error("No storage backend configuration present. Please set configure a storage backend in application.conf")
 			Play.stop()
@@ -48,6 +48,6 @@ object StorageBackend {
 		}
 	}
 
-	def apply() = handler
+	def apply() = backend 
 }
 
