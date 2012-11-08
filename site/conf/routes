@@ -11,6 +11,10 @@ POST	/api/collections/new        controllers.Images.Api.createCollection
 
 GET 	/api/images/addToCollection controllers.Images.Api.addToCollection(imageId: Long, collectionId: Long, fromCollectionId: Option[Long])
 
+GET 	/images/edit/*id           	controllers.Images.edit(id: Long)
+
+POST 	/images/edit           			controllers.Images.editSubmit
+
 GET 	/api/map/markers/all        controllers.Maps.Api.allMarkers
 
 GET 	/api/map/markers/balloon    controllers.Maps.Api.balloon(imageId: Long)
@@ -25,7 +29,7 @@ GET 	/signup                     controllers.Accounts.signup
 
 POST	/signup                     controllers.Accounts.signupSubmit
 
-GET 	/data/*path                  controllers.FileServer.serve(path: String)
+GET 	/data/*path                 controllers.FileServer.serve(path: String)
 
 POST	/api/images/upload          controllers.Images.Api.uploadImage
 

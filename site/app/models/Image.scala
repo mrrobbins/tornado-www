@@ -38,10 +38,39 @@ case class ImageTemplate(
 
 object Image {
 
+	def apply(id: Long)(implicit conn: Connection = null): Image = ensuringConnection { implicit conn =>
+		val imageQuery = SQL(		
+			"""
+				SELECT * FROM (image 
+				LEFT JOIN pending_image ON image.id = pending_image.image_id)
+				LEFT JOIN collection_image ON image.id = collection_image.image_id 
+				WHERE image.id = {imageId};
+			"""
+		).on("imageId" -> id)
+		
+		imageQuery().headOption.map { row =>
+			val collectionId = row[Option[Long]]("collection_id")
+			Image(
+				row[Long]("id"),
+				row[String]("picture_path"),
+				row[Option[Long]]("time_captured"),
+				row[Long]("time_uploaded"),
+				row[Option[Double]]("latitude"),
+				row[Option[Double]]("longitude"),
+				row[Long]("id"),
+				if (collectionId.isDefined) row[String]("collection_image.notes") else row[String]("pending_image.notes"),
+				if (collectionId.isDefined) row[Int]("collection_image.damage_indicator") else row[Int]("pending_image.damage_indicator"),
+				if (collectionId.isDefined) row[Int]("collection_image.degree_of_damage") else row[Int]("pending_image.degree_of_damage"),
+				collectionId,
+				if (collectionId.isDefined) false else true
+			)
+		}.getOrElse(throw new Exception("Image not found"))
+	}
+
 	def allByUser(userId: Long)(implicit conn: Connection = null): List[Image] = ensuringConnection { implicit conn =>
 		val pendingQuery = SQL(
 			"""
-				SELECT * FROM image JOIN pending_image ON image.id = pending_image.image_id AND image.user_id = {userId};
+				SELECT * FROM image JOIN pending_image ON image.id = pending_image.image_id WHERE image.user_id = {userId};
 			"""
 		).on("userId" -> userId)
 

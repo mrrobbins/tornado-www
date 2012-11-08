@@ -22,6 +22,16 @@ object Images extends Controller with Auth with AuthConfigImpl {
 			Ok(views.html.upload()) 
 		}	
 
+	def edit(imageId: Long) =
+		authorizedAction(NormalUser) { implicit user => implicit request =>
+			Ok(views.html.image(Image(imageId))) 
+		}	
+
+	def editSubmit =
+		authorizedAction(NormalUser) { implicit user => implicit request =>
+			Ok("success") 
+		}	
+
 	object Api {
 
 		def addToCollection(
