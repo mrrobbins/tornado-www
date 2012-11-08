@@ -49,7 +49,37 @@ object Image {
 		).on("imageId" -> id)
 		
 		imageQuery().headOption.map { row =>
+
 			val collectionId = row[Option[Long]]("collection_id")
+
+			// Get notes or throw an exception:
+			// First check if collection_image.notes is NULL
+			// If not, take that. If so, check pending_image.notes.
+			// If both are NULL, we throw an exception
+			val notes = row[Option[String]](
+				"collection_image.notes"
+			) orElse row[Option[String]](
+				"pending_image.notes"
+			) getOrElse (
+				throw new SQLException("Image has no notes")
+			)
+
+			val indicator = row[Option[Int]](
+				"collection_image.damage_indicator"
+			) orElse row[Option[Int]](
+				"pending_image.damage_indicator"
+			) getOrElse (
+				throw new SQLException("Image has no damage indicator")
+			)
+
+			val degree = row[Option[Int]](
+				"collection_image.degree_of_damage"
+			) orElse row[Option[Int]](
+				"pending_image.degree_of_damage"
+			) getOrElse (
+				throw new SQLException("Image has no degree of damage")
+			)
+
 			Image(
 				row[Long]("id"),
 				row[String]("picture_path"),
@@ -58,13 +88,13 @@ object Image {
 				row[Option[Double]]("latitude"),
 				row[Option[Double]]("longitude"),
 				row[Long]("id"),
-				if (collectionId.isDefined) row[String]("collection_image.notes") else row[String]("pending_image.notes"),
-				if (collectionId.isDefined) row[Int]("collection_image.damage_indicator") else row[Int]("pending_image.damage_indicator"),
-				if (collectionId.isDefined) row[Int]("collection_image.degree_of_damage") else row[Int]("pending_image.degree_of_damage"),
+				notes,
+				indicator,
+				degree,
 				collectionId,
-				if (collectionId.isDefined) false else true
+				collectionId.isEmpty
 			)
-		}.getOrElse(throw new Exception("Image not found"))
+		}.getOrElse(throw new SQLException("Image not found"))
 	}
 
 	def allByUser(userId: Long)(implicit conn: Connection = null): List[Image] = ensuringConnection { implicit conn =>
