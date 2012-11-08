@@ -29,22 +29,22 @@
 						<form action="/signup" method="post">
 							<fieldset>
 								<div class="clearfix">
-									<input type="text" name="fname" placeholder="First Name" value="@form("fname").value">
+									<input type="text" name="fname" placeholder="First Name" value="@form("fname").value" required>
 								</div>
 								<div class="clearfix">
-									<input type="text" name="lname" placeholder="Last Name" value="@form("lname").value">
+									<input type="text" name="lname" placeholder="Last Name" value="@form("lname").value" required>
 								</div>
 								<div class="clearfix">
-									<input type="email" name="email" placeholder="Email" value="@form("email").value">
+									<input type="email" name="email" placeholder="Email" value="@form("email").value" required>
 								</div>
 								<div class="clearfix">
-									<input type="email" name="email2" placeholder="Confirm Email" value="@form("email2").value">
+									<input type="email" name="email2" placeholder="Confirm Email" value="@form("email2").value" required>
 								</div>
 								<div class="clearfix">
-									<input type="password" name="password" placeholder="Password (min 8 characters)">
+									<input type="password" name="password" placeholder="Password (min 8 characters)" pattern=".{8,}" required>
 								</div>
 								<div class="clearfix">
-									<input type="password" name="password2" placeholder="Confirm Password">
+									<input type="password" name="password2" placeholder="Confirm Password" required>
 								</div>
 								<button class="btn btn-success" type="submit">Create</button>
 							</fieldset>
