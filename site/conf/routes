@@ -11,7 +11,7 @@ POST  /api/collections/new        controllers.Images.Api.createCollection
 
 GET   /api/images/addToCollection controllers.Images.Api.addToCollection(imageId: Long, collectionId: Long, fromCollectionId: Option[Long])
 
-GET   /images/edit/*id            controllers.Images.edit(id: Long)
+GET   /images/edit/:id            controllers.Images.edit(id: Long)
 
 POST  /images/edit                controllers.Images.editSubmit
 
