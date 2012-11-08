@@ -28,7 +28,7 @@
 <div class="well container">
 <form action="/api/collections/new" method="post" id="selection_form">
 	<ul>
-	@for(image <- Image.all.filter(_.pending)) {
+	@for(image <- Image.allByUser(user.id).filter(_.pending)) {
 		<li>
 		<div class="gallery-container">
 			<div class="thumbnail">

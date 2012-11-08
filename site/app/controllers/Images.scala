@@ -82,7 +82,7 @@ object Images extends Controller with Auth with AuthConfigImpl {
 							path,
 							metadata.latitude,
 							metadata.longitude,
-							User.all.head.id,
+							user.id,
 							metadata.time,
 							"",
 							1,

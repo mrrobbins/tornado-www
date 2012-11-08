@@ -38,18 +38,12 @@ case class ImageTemplate(
 
 object Image {
 
-	def all(implicit conn: Connection = null): List[Image] = ensuringConnection { implicit conn =>
+	def allByUser(userId: Long)(implicit conn: Connection = null): List[Image] = ensuringConnection { implicit conn =>
 		val pendingQuery = SQL(
 			"""
-				SELECT * FROM image JOIN pending_image ON image.id = pending_image.image_id;
+				SELECT * FROM image JOIN pending_image ON image.id = pending_image.image_id AND image.user_id = {userId};
 			"""
-		)
-
-		val collectionQuery = SQL(
-			"""
-				SELECT * FROM image JOIN collection_image ON image.id = collection_image.image_id;
-			"""
-		)
+		).on("userId" -> userId)
 
 		val pendingRows = pendingQuery().map { row =>
 			Image(
@@ -67,6 +61,12 @@ object Image {
 				true
 			)
 		} toList
+
+		val collectionQuery = SQL(
+			"""
+				SELECT * FROM image JOIN collection_image ON image.id = collection_image.image_id AND image.user_id = {userId};
+			"""
+		).on("userId" -> userId)
 
 		val collectionRows = collectionQuery().map { row =>
 			Image(
@@ -86,7 +86,10 @@ object Image {
 		} toList
 
 		pendingRows ++ collectionRows
+	}
 
+	def all(implicit conn: Connection = null): List[Image] = ensuringConnection { implicit conn =>
+		User.all.flatMap(user => allByUser(user.id))
 	}
 
 	def insert(template: ImageTemplate)(implicit trans: Connection = null): Long = ensuringTransaction { implicit trans =>
