@@ -51,6 +51,10 @@ object Image {
 		imageQuery().headOption.map { row =>
 
 			val collectionId = row[Option[Long]]("collection_id")
+			// if image is not in collection table it must be in pending table
+			if (collectionId.isEmpty && row[Option[Long]]("pending_image.image_id").isEmpty) {
+				throw new SQLException("Orphan image - not in a collection or pending")
+			}
 
 			// Get notes or throw an exception:
 			// First check if collection_image.notes is NULL
