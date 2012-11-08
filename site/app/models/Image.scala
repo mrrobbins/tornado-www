@@ -97,11 +97,28 @@ object Image {
 		}.getOrElse(throw new SQLException("Image not found"))
 	}
 
-	def allByUser(userId: Long)(implicit conn: Connection = null): List[Image] = ensuringConnection { implicit conn =>
+	def all(userId: Long = User.NoUser.id)(implicit conn: Connection = null): List[Image] = ensuringConnection { implicit conn =>
+		val pendingSelection = """
+			SELECT * FROM image JOIN pending_image ON image.id = pending_image.image_id 
+		"""
+
+		val collectionSelection = """
+			SELECT * FROM image JOIN collection_image ON image.id = collection_image.image_id
+		"""
+
+		val filters = Seq(
+			if (userId != User.NoUser.id) Some("image.user_id = {userId}")
+			else None
+		).flatten
+
+		val filterString = if (!filters.isEmpty) " WHERE " + filters.mkString(" AND ") else ""
+
 		val pendingQuery = SQL(
-			"""
-				SELECT * FROM image JOIN pending_image ON image.id = pending_image.image_id WHERE image.user_id = {userId};
-			"""
+			pendingSelection + filterString
+		).on("userId" -> userId)
+
+		val collectionQuery = SQL(
+			collectionSelection + filterString
 		).on("userId" -> userId)
 
 		val pendingRows = pendingQuery().map { row =>
@@ -121,12 +138,6 @@ object Image {
 			)
 		} toList
 
-		val collectionQuery = SQL(
-			"""
-				SELECT * FROM image JOIN collection_image ON image.id = collection_image.image_id AND image.user_id = {userId};
-			"""
-		).on("userId" -> userId)
-
 		val collectionRows = collectionQuery().map { row =>
 			Image(
 				row[Long]("id"),
@@ -145,10 +156,6 @@ object Image {
 		} toList
 
 		pendingRows ++ collectionRows
-	}
-
-	def all(implicit conn: Connection = null): List[Image] = ensuringConnection { implicit conn =>
-		User.all.flatMap(user => allByUser(user.id))
 	}
 
 	def insert(template: ImageTemplate)(implicit trans: Connection = null): Long = ensuringTransaction { implicit trans =>

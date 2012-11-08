@@ -22,7 +22,10 @@ case class User(
 	fname: String,
 	lname: String,
 	isAdmin: Boolean
-)
+) {
+	def images(implicit conn: Connection) =
+		ensuringConnection { implicit conn => Image.all(userId = id) }
+}
 
 /** The fields required to insert a new
   * `User` object into the database
@@ -38,9 +41,14 @@ case class UserTemplate(
 	fname: String,
 	lname: String,
 	isAdmin: Boolean
-)
+) {
+	def insert(implicit trans: Connection) =
+		ensuringTransaction { implicit trans => User.insert(this) }
+}
 
 object User {
+
+	val NoUser = User(-1, "", "", "", "", false)
 
 	private def mapUsers(rows: Stream[Row]): List[User] = {
 		rows.map { row => 

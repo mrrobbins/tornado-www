@@ -18,7 +18,7 @@ object Maps extends Controller with Auth with AuthConfigImpl {
 	object Api {
 
 		def balloon(imageId: Long) = Action { Async { Akka.future {
-				val image = Image.all.filter(image => image.id == imageId).head
+				val image = Image(imageId)
 				val content = views.html.balloon(image).toString
 		
 				val contentJson = toJson(Map("content" -> toJson(content)))

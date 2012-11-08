@@ -17,7 +17,7 @@ case class Marker(
 object Marker {
 	
 	def all: List[Marker] = {
-		val pending = Image.all.filter(!_.pending).map { image =>
+		val pending = Image.all().filter(!_.pending).map { image =>
 			Marker(
 				image.id,
 				image.notes,
