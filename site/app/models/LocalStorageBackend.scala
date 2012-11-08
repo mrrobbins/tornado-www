@@ -43,7 +43,8 @@ class LocalStorageBackend(c: Configuration) extends StorageBackend {
 				throw new Exception("Could not create unique filename")
 			}
 		}
-		file.renameTo(outputFile)
+		val moveSuccessful = file.renameTo(outputFile))
+		if (!moveSucccessful) throw new Exception("Could not move file to destination")
 		outputFile.getName
 	}
 
