@@ -12,7 +12,8 @@ object ApplicationBuild extends Build {
 			"org.scalatest" %% "scalatest" % "2.0.+" % "test",
 			"com.drewnoakes" % "metadata-extractor" % "2.6.+",
 			"org.imgscalr" % "imgscalr-lib" % "4.2",
-			"jp.t2v" % "play20.auth_2.9.1" % "0.3"
+			"jp.t2v" % "play20.auth_2.9.1" % "0.3",
+			"org.xerial" % "sqlite-jdbc" % "3.7.+"
     )
 
     val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(
