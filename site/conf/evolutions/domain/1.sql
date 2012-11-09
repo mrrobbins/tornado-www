@@ -2,9 +2,9 @@
 # --- !Ups
 
 CREATE TABLE tornado_damage_indicator (
-  _id INTEGER PRIMARY KEY,
-  description TEXT,
-  abbreviation VARCHAR(64) UNIQUE
+  id INTEGER PRIMARY KEY,
+  description TEXT NOT NULL,
+  abbreviation VARCHAR(64) UNIQUE NOT NULL
 );
 
 # --- !Downs

@@ -2,12 +2,12 @@
 # --- !Ups
 
 CREATE TABLE tornado_degree_of_damage (
-  _id INTEGER,
-  indicator_abbreviation VARCHAR(64),
-  description TEXT,
-  lowest_windspeed INTEGER,
-  expected_windspeed INTEGER,
-  highest_windspeed INTEGER,
+  id INTEGER NOT NULL,
+  indicator_abbreviation VARCHAR(64) NOT NULL,
+  description TEXT NOT NULL,
+  lowest_windspeed INTEGER NOT NULL,
+  expected_windspeed INTEGER NOT NULL,
+  highest_windspeed INTEGER NOT NULL,
   PRIMARY KEY(_id, indicator_abbreviation),
   FOREIGN KEY(
     indicator_abbreviation
