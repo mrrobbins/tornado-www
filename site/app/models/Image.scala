@@ -162,37 +162,70 @@ object Image {
 		pendingRows ++ collectionRows
 	}
 
+	def update(image: Image)(implicit trans: Connection = null) = ensuringTransaction { implicit trans =>
+		val imageUpdate = SQL(
+			"""
+				UPDATE image 
+				SET latitude = {lat}, longitude = {long} 
+				WHERE id = {id};
+			"""
+		).on(
+			"lat" -> image.lat,
+			"long" -> image.long,
+			"id" -> image.id
+		)
+	
+		if(imageUpdate.executeUpdate() != 1) throw new SQLException("Failed to update image data")
+
+		val tableName = if (image.pending) "pending_image" else "collection_image"
+
+		val secondaryImageUpdate = SQL(
+			"""
+				UPDATE {table}
+				SET notes = {notes}, damage_indicator = {indicator}, degree_of_damage = {degree}
+				WHERE image_id = {id};
+			""".replace("{table}", tableName)
+		).on(
+			"notes" -> image.notes,
+			"indicator" -> image.indicator,
+			"degree" -> image.degree,
+			"id" -> image.id
+		)
+
+		if(secondaryImageUpdate.executeUpdate() != 1) throw new SQLException("Failed to update collection image data")
+	}
+
 	def insert(template: ImageTemplate)(implicit trans: Connection = null): Long = ensuringTransaction { implicit trans =>
-			val imageInsertion = SQL(
-				"""
-					INSERT INTO image (picture_path, time_captured, time_uploaded, latitude, longitude, user_id)
-					VALUES ({path}, {time}, UNIX_TIMESTAMP(), {lat}, {long}, {user});
-				"""
-			).on(
-					"path" -> template.path,
-					"time" -> template.time,
-					"lat" -> template.lat,
-					"long" -> template.long,
-					"user" -> template.userId
-			)
-
-			val image = imageInsertion.executeInsert().getOrElse(throw new SQLException("Failed to create image"))
-			val pendingInsert = SQL(
-				"""
-					INSERT INTO pending_image (image_id, notes, damage_indicator, degree_of_damage, user_id)
-					VALUES ({image}, {notes}, {indicator}, {degree}, {user});
-				"""
-			).on(
-				"image" -> image,
-				"notes" -> template.notes,
-				"indicator" -> template.indicator,
-				"degree" -> template.degree,
+		val imageInsertion = SQL(
+			"""
+				INSERT INTO image (picture_path, time_captured, time_uploaded, latitude, longitude, user_id)
+				VALUES ({path}, {time}, UNIX_TIMESTAMP(), {lat}, {long}, {user});
+			"""
+		).on(
+				"path" -> template.path,
+				"time" -> template.time,
+				"lat" -> template.lat,
+				"long" -> template.long,
 				"user" -> template.userId
-			)
+		)
 
-			if (pendingInsert.executeUpdate() != 1) throw new SQLException("Failed to add to pending")
+		val image = imageInsertion.executeInsert().getOrElse(throw new SQLException("Failed to create image"))
+		val pendingInsert = SQL(
+			"""
+				INSERT INTO pending_image (image_id, notes, damage_indicator, degree_of_damage, user_id)
+				VALUES ({image}, {notes}, {indicator}, {degree}, {user});
+			"""
+		).on(
+			"image" -> image,
+			"notes" -> template.notes,
+			"indicator" -> template.indicator,
+			"degree" -> template.degree,
+			"user" -> template.userId
+		)
 
-			image
+		if (pendingInsert.executeUpdate() != 1) throw new SQLException("Failed to add to pending")
+
+		image
 	}
 
 	def addToCollection(imageId: Long, collectionId: Long, fromCollectionId: Option[Long] = None)(implicit trans: Connection = null): Unit = ensuringTransaction { implicit trans =>

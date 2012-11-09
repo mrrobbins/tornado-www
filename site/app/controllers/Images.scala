@@ -4,11 +4,17 @@ package controllers
 import play.api.mvc._
 import models._
 import jp.t2v.lab.play20.auth._
+import play.api.data.Forms._
+import play.api.data.Form
 import java.io._
 import play.api.libs.json._
 import play.api.libs.json.Json.toJson
 import play.api.libs.concurrent.Akka
 import play.api.Play.current
+import java.util.Date
+import java.text.DateFormat
+import java.util.Locale
+import data.Forms._
 
 object Images extends Controller with Auth with AuthConfigImpl {
 
@@ -24,13 +30,99 @@ object Images extends Controller with Auth with AuthConfigImpl {
 
 	def edit(imageId: Long) =
 		authorizedAction(NormalUser) { implicit user => implicit request =>
-			Ok(views.html.image(Image(imageId))) 
+			val form = imageToFormData(Image(imageId))
+			Ok(views.html.image(editImageForm.fill(form)))
 		}	
 
 	def editSubmit =
 		authorizedAction(NormalUser) { implicit user => implicit request =>
-			Ok("success") 
-		}	
+		editImageForm.bindFromRequest()
+		def success(data: EditImageFormData) = Async {
+			val image = Image(data.id).copy(
+				notes=data.notes, 
+				indicator=data.indicator, 
+				degree=data.degree
+			)
+			Akka.future {
+				Image.update(image)
+				Ok("/photoqueue")
+			} recover {
+				case _: Exception =>
+					val form = editImageForm.fill(data)
+					val flashSession = flash + ("message" -> "Failed to update image")
+					InternalServerError(views.html.image(form)(flashSession, user))
+			}
+		}
+		def failure(form: Form[EditImageFormData]) = {
+			val json = form.errorsAsJson.asInstanceOf[JsObject]
+			val error = json \ "" match {
+				case _: JsUndefined => (json \ json.keys.head)(0).as[String]
+				case value: JsArray => value(0).as[String]
+				case _ => "Bad data"
+			}
+			val imageId = form("id").value
+			if (imageId.isDefined) {
+				val image = Image(imageId.get.toLong)
+				println(json.toString)
+				BadRequest(views.html.image(form)(flash + ("message" -> error), user))
+			} else {
+				Redirect("/photoqueue")
+			}
+		}
+
+		editImageForm.bindFromRequest().fold(failure, success)
+	}	
+
+	def imageToFormData(image: Image) = {
+		import image._
+		val df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.getDefault())
+		EditImageFormData(
+			id,
+			path,
+			time.map(t => df.format(new Date(t))),
+			df.format(new Date(timeUploaded*1000L)),
+			lat,
+			long,
+			user,
+			notes,
+			indicator,
+			degree,
+			collectionId,
+			pending.toString
+		)	
+	}
+
+	case class EditImageFormData(
+		id: Long,
+		path: String,
+		time: Option[String],
+		uploaded: String,
+		latitude: Option[Double],
+		longitude: Option[Double],
+		user: Long,
+		notes: String,
+		indicator: Int,
+		degree: Int,
+		collectionId: Option[Long],
+		pending: String
+	)
+
+	val editImageForm = Form (
+		mapping(
+			"id" -> longNumber,
+			"path" -> text,
+			"time" -> optional(text),
+			"uploaded" -> text,
+			"lat" -> optional(doubleDecimal),
+			"long" -> optional(doubleDecimal),
+			"user" -> longNumber,
+			"notes" -> text,
+			"indicator" -> number,
+			"degree" -> number,
+			"collectionId" -> optional(longNumber),
+			"pending" -> text
+		)(EditImageFormData.apply)(EditImageFormData.unapply)
+	)
 
 	object Api {
 

@@ -1,4 +1,4 @@
-@(image: Image)(implicit user: models.User)
+@(form: Form[controllers.Images.EditImageFormData] = controllers.Images.editImageForm)(implicit flash: Flash, user: models.User)
 
 @import views.nav._
 @import models._
@@ -20,82 +20,85 @@
 	<div id="content" class="container">
 		<div class="page-header">
 			<h1>Image Information</h1>
+			@flash.get("message").map { message =>
+				<h5 class="red">
+					@message
+				</h5>
+			}
 		</div>
 		<div class="well container">
-				<img class="image" src="@StorageBackend().lookup("images", image.path)">
-				<form class="form-horizontal span6" action="/api/images/edit" method="post" id="image_form">
+				<img class="image" src="@form("path").value.map(path => StorageBackend().lookup("images", path))">
+				<form class="form-horizontal span6" action="/images/edit" method="post" id="image_form">
 					<div class="control-group">
 						<label class="control-label" for="id">ID</label>
 						<div class="controls">
-							<input disabled="true" type="text" id="id" name="id" value="@image.id">
+							<input readonly type="text" id="id" name="id" value="@form("id").value">
 						</div>
 					</div>
 					<div class="control-group">
 						<label class="control-label" for="path">Path</label>
 						<div class="controls">
-							<input disabled="true" type="text" id="path" name="path" value="@image.path">
+							<input readonly type="text" id="path" name="path" value="@form("path").value">
 						</div>
 					</div>
-					@defining(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.getDefault())) { df =>
 					<div class="control-group">
 						<label class="control-label" for="time">Time</label>
 						<div class="controls">
-							<input disabled="true" type="text" id="time" name="time" value="@image.time.map(t => df.format(new Date(t)))">
+							<input readonly type="text" id="time" name="time" value="@form("time").value">
 						</div>
 					</div>
 					<div class="control-group">
 						<label class="control-label" for="uploaded">Uploaded</label>
 						<div class="controls">
-							<input disabled="true" type="text" id="lat" name="uploaded" value="@df.format(new Date(image.timeUploaded*1000L))">
+							<input readonly type="text" id="lat" name="uploaded" value="@form("uploaded").value">
 						</div>
 					</div>
-					}
 					<div class="control-group">
 						<label class="control-label" for="lat">Latitude</label>
 						<div class="controls">
-							<input type="text" id="lat" name="lat" value="@image.lat">
+							<input type="text" id="lat" name="lat" value="@form("lat").value">
 						</div>
 					</div>
 					<div class="control-group">
 						<label class="control-label" for="long">Longitude</label>
 						<div class="controls">
-							<input type="text" id="long" name="long" value="@image.long">
+							<input type="text" id="long" name="long" value="@form("long").value">
 						</div>
 					</div>
 					<div class="control-group">
 						<label class="control-label" for="user">User</label>
 						<div class="controls">
-							<input disabled="true" type="text" id="user" name="user" value="@image.user">
+							<input readonly type="text" id="user" name="user" value="@form("user").value">
 						</div>
 					</div>
 					<div class="control-group">
 						<label class="control-label" for="notes">Notes</label>
 						<div class="controls">
-							<textarea rows="10" id="notes" name="notes" value="@image.notes"></textarea>
+							<textarea rows="10" id="notes" name="notes" value="@form("notes").value"></textarea>
 						</div>
 					</div>
 					<div class="control-group">
 						<label class="control-label" for="indicator">Damage Indicator</label>
 						<div class="controls">
-							<input type="text" id="indicator" name="indicator" value="@image.indicator">
+							<input type="text" id="indicator" name="indicator" value="@form("indicator").value">
 						</div>
 					</div>
 					<div class="control-group">
 						<label class="control-label" for="degree">Degree of Damage</label>
 						<div class="controls">
-							<input type="text" id="degree" name="degree" value="@image.degree">
+							<input type="text" id="degree" name="degree" value="@form("degree").value">
 						</div>
 					</div>
 					<div class="control-group">
 						<label class="control-label" for="collectionId">Collection ID</label>
 						<div class="controls">
-							<input disabled="true" type="text" id="collectionId" name="collectionId" value="@image.collectionId">
+							<input readonly type="text" id="collectionId" name="collectionId" value="@form("collectionId").value">
 						</div>
 					</div>
 					<div class="control-group">
 						<label class="control-label" for="pending">Is Pending</label>
 						<div class="controls">
-							<input disabled="true" type="text" id="pending" name="pending" value="@image.pending">
+							<input readonly type="text" id="pending" name="pending" value="@form("pending").value">
 						</div>
 					</div>
 					<button class="btn btn-success" type="submit">Save</button>
