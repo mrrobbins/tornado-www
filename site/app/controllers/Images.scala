@@ -41,7 +41,9 @@ object Images extends Controller with Auth with AuthConfigImpl {
 			val image = Image(data.id).copy(
 				notes=data.notes, 
 				indicator=data.indicator, 
-				degree=data.degree
+				degree=data.degree,
+				lat=data.latitude,
+				long=data.longitude
 			)
 			Akka.future {
 				Image.update(image)
