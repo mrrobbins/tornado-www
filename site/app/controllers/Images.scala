@@ -209,8 +209,10 @@ object Images extends Controller with Auth with AuthConfigImpl {
 				}
 
 				Async { futureFileStorageErrors.map { fileStorageErrors =>
-					val result = Json.toJson(fileStorageErrors++fileTypeErrors)
-					Ok(result)
+					val errors = fileStorageErrors ++ fileTypeErrors
+					val result = Json.toJson(errors)
+					if (errors isEmpty) Ok(result)
+					else BadRequest(result)
 				} }
 
 			}
