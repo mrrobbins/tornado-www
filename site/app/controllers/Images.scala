@@ -168,6 +168,7 @@ object Images extends Controller with Auth with AuthConfigImpl {
 				parse.multipartFormData,
 				NormalUser
 			) { implicit user => implicit request =>
+				val formData = request.body.asFormUrlEncoded
 				// remove missing or non-image mime types
 				val (imageFiles, errorFiles) = request.body.files.partition(
 						_.contentType.filter(_.startsWith("image/")).isDefined
@@ -184,13 +185,13 @@ object Images extends Controller with Auth with AuthConfigImpl {
 						StorageBackend().store("thumbnails", tmpFile, Some("image/jpg"), Some(path))
 						val template: ImageTemplate = ImageTemplate(
 							path,
-							metadata.latitude,
-							metadata.longitude,
+							formData.get(name+"longitude").flatMap(_.headOption).map(_.toDouble) orElse metadata.latitude,
+							formData.get(name+"longitude").flatMap(_.headOption).map(_.toDouble) orElse metadata.longitude,
 							user.id,
-							metadata.time,
-							"",
-							1,
-							1
+							formData.get(name+"|time").flatMap(_.headOption).map(_.toLong) orElse metadata.time,
+							formData.get(name+"|notes").flatMap(_.headOption).getOrElse(""),
+							formData.get(name +"|indicator").flatMap(_.headOption).map(_.toInt).getOrElse(0),
+							formData.get(name+"|degree").flatMap(_.headOption).map(_.toInt).getOrElse(0)
 						)
 						Image.insert(template)
 						None
