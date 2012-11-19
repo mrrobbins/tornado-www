@@ -91,7 +91,7 @@ object Image {
 				timeUploaded=row[Long]("time_uploaded"),
 				lat=row[Option[Double]]("latitude"),
 				long=row[Option[Double]]("longitude"),
-				user=row[Long]("user_id"),
+				user=row[Long]("image.user_id"),
 				notes=notes,
 				indicator=indicator,
 				degree=degree,
