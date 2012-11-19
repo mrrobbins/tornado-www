@@ -85,18 +85,18 @@ object Image {
 			)
 
 			Image(
-				row[Long]("id"),
-				row[String]("picture_path"),
-				row[Option[Long]]("time_captured"),
-				row[Long]("time_uploaded"),
-				row[Option[Double]]("latitude"),
-				row[Option[Double]]("longitude"),
-				row[Long]("id"),
-				notes,
-				indicator,
-				degree,
-				collectionId,
-				collectionId.isEmpty
+				id=row[Long]("id"),
+				path=row[String]("picture_path"),
+				time=row[Option[Long]]("time_captured"),
+				timeUploaded=row[Long]("time_uploaded"),
+				lat=row[Option[Double]]("latitude"),
+				long=row[Option[Double]]("longitude"),
+				user=row[Long]("user_id"),
+				notes=notes,
+				indicator=indicator,
+				degree=degree,
+				collectionId=collectionId,
+				pending=collectionId.isEmpty
 			)
 		}.getOrElse(throw new SQLException("Image not found"))
 	}
@@ -127,35 +127,35 @@ object Image {
 
 		val pendingRows = pendingQuery().map { row =>
 			Image(
-				row[Long]("id"),
-				row[String]("picture_path"),
-				row[Option[Long]]("time_captured"),
-				row[Long]("time_uploaded"),
-				row[Option[Double]]("latitude"),
-				row[Option[Double]]("longitude"),
-				row[Long]("user_id"),
-				row[String]("notes"),
-				row[Int]("damage_indicator"),
-				row[Int]("degree_of_damage"),
-				None,
-				true
+				id=row[Long]("id"),
+				path=row[String]("picture_path"),
+				time=row[Option[Long]]("time_captured"),
+				timeUploaded=row[Long]("time_uploaded"),
+				lat=row[Option[Double]]("latitude"),
+				long=row[Option[Double]]("longitude"),
+				user=row[Long]("user_id"),
+				notes=row[String]("notes"),
+				indicator=row[Int]("damage_indicator"),
+				degree=row[Int]("degree_of_damage"),
+				collectionId=None,
+				pending=true
 			)
 		} toList
 
 		val collectionRows = collectionQuery().map { row =>
 			Image(
-				row[Long]("id"),
-				row[String]("picture_path"),
-				row[Option[Long]]("time_captured"),
-				row[Long]("time_uploaded"),
-				row[Option[Double]]("latitude"),
-				row[Option[Double]]("longitude"),
-				row[Long]("user_id"),
-				row[String]("notes"),
-				row[Int]("damage_indicator"),
-				row[Int]("degree_of_damage"),
-				Some(row[Long]("collection_id")),
-				false
+				id=row[Long]("id"),
+				path=row[String]("picture_path"),
+				time=row[Option[Long]]("time_captured"),
+				timeUploaded=row[Long]("time_uploaded"),
+				lat=row[Option[Double]]("latitude"),
+				long=row[Option[Double]]("longitude"),
+				user=row[Long]("user_id"),
+				notes=row[String]("notes"),
+				indicator=row[Int]("damage_indicator"),
+				degree=row[Int]("degree_of_damage"),
+				collectionId=Some(row[Long]("collection_id")),
+				pending=false
 			)
 		} toList
 
@@ -319,18 +319,18 @@ object Image {
 		head.map { row => 
 			import row.get
 			Image(
-				row[Long]("image_id"),
-				row[String]("picture_path"),
-				row[Option[Long]]("time_captured"),
-				row[Long]("time_uploaded"),
-				row[Option[Double]]("latitude"),
-				row[Option[Double]]("longitude"),
-				row[Long]("user_id"),
-				row[String]("notes"),
-				row[Int]("damage_indicator"),
-				row[Int]("degree_of_damage"),
-				None,
-				true
+				id=row[Long]("image_id"),
+				path=row[String]("picture_path"),
+				time=row[Option[Long]]("time_captured"),
+				timeUploaded=row[Long]("time_uploaded"),
+				lat=row[Option[Double]]("latitude"),
+				long=row[Option[Double]]("longitude"),
+				user=row[Long]("user_id"),
+				notes=row[String]("notes"),
+				indicator=row[Int]("damage_indicator"),
+				degree=row[Int]("degree_of_damage"),
+				collectionId=None,
+				pending=true
 			)
 		}
 	}
