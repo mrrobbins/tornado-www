@@ -52,7 +52,7 @@ object Images extends Controller with Auth with AuthConfigImpl {
 			)
 			Akka.future {
 				Image.update(image)
-				Ok("/photoqueue")
+				Redirect("/photoqueue").flashing("message" -> "Uploaded Sucessfully")
 			} recover {
 				case _: Exception =>
 					val form = editImageForm.fill(data)

@@ -18,7 +18,7 @@ case class DamageIndicator(
 
 object DamageIndicator {
 
-	def all(implicit conn: Connection = null) = ensuringConnection("domain") { implicit conn =>
+	def all(implicit conn: Connection = null): List[DamageIndicator] = ensuringConnection("domain") { implicit conn =>
 		val query = SQL(
 			"""
 				SELECT * FROM tornado_damage_indicator

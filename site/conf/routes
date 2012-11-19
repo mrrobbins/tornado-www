@@ -3,41 +3,43 @@
 # ~~~~
 
 # Home page
-GET   /                           controllers.Maps.page
+GET   /                            controllers.Maps.page
 
-GET   /map                        controllers.Maps.page
+GET   /map                         controllers.Maps.page
 
-POST  /api/collections/new        controllers.Images.Api.createCollection
+POST  /api/collections/new         controllers.Images.Api.createCollection
 
-GET   /api/images/addToCollection controllers.Images.Api.addToCollection(imageId: Long, collectionId: Long, fromCollectionId: Option[Long])
+GET   /api/images/addToCollection  controllers.Images.Api.addToCollection(imageId: Long, collectionId: Long, fromCollectionId: Option[Long])
 
-GET   /images/edit/:id            controllers.Images.edit(id: Long)
+GET   /images/edit/:id             controllers.Images.edit(id: Long)
 
-POST  /images/edit/:id            controllers.Images.editSubmit(id: Long)
+POST  /images/edit/:id             controllers.Images.editSubmit(id: Long)
 
-GET   /api/map/markers/all        controllers.Maps.Api.allMarkers
+GET   /api/map/markers/all         controllers.Maps.Api.allMarkers
 
-GET   /api/map/markers/balloon    controllers.Maps.Api.balloon(imageId: Long)
+GET   /api/map/markers/balloon     controllers.Maps.Api.balloon(imageId: Long)
 
-GET   /upload                     controllers.Images.uploadPage
+GET   /api/indicators/:id/degrees controllers.Indicators.Api.degrees(id: Int)
 
-GET   /login                      controllers.Accounts.login
+GET   /upload                      controllers.Images.uploadPage
 
-POST  /login                      controllers.Accounts.loginSubmit
+GET   /login                       controllers.Accounts.login
 
-POST  /logout                     controllers.Accounts.logoutSubmit
+POST  /login                       controllers.Accounts.loginSubmit
 
-GET   /signup                     controllers.Accounts.signup
+POST  /logout                      controllers.Accounts.logoutSubmit
 
-POST  /signup                     controllers.Accounts.signupSubmit
+GET   /signup                      controllers.Accounts.signup
 
-GET   /data/*path                 controllers.FileServer.serve(path: String)
+POST  /signup                      controllers.Accounts.signupSubmit
 
-POST  /api/images/upload          controllers.Images.Api.uploadImage
+GET   /data/*path                  controllers.FileServer.serve(path: String)
 
-GET   /photoqueue                 controllers.Images.queuePage
+POST  /api/images/upload           controllers.Images.Api.uploadImage
+
+GET   /photoqueue                  controllers.Images.queuePage
 
 
 # Map static resources from the /public folder to the /assets URL path
-GET  /assets/*file                controllers.Assets.at(path="/public", file)
+GET  /assets/*file                 controllers.Assets.at(path="/public", file)
 
