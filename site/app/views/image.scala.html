@@ -32,7 +32,7 @@
 		</div>
 		<div class="well container">
 			<div class="row">
-				<img  class="big-image" src="@StorageBackend().lookup("images", Image(imageId).path)" class="span9">
+				<img  class="big-image span9" src="@StorageBackend().lookup("images", Image(imageId).path)" >
 				<form class="form-horizontal span6" action="/images/edit/@imageId" method="post" id="image_form">
 					<div class="control-group">
 						<label class="control-label" for="capture_time">Capture Time</label>
@@ -90,7 +90,7 @@
 						<div class="controls">
 							<select selectedIndex="@form("degree").value" name="degree" id="degree">
 								<option value="0">None</option>
-								@form("indicator").value.map { indicator =>
+								@form("indicator").value.filter(_ != "0").map { indicator =>
 									@for(d<-DamageIndicator.withId(indicator.toInt).degrees) {
 										@if(Some(d.id.toString) == form("degree").value) {
 											<option value="@d.id" selected="selected">@d.id - @d.description</option>
