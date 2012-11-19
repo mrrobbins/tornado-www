@@ -80,7 +80,12 @@
 					<div class="control-group">
 						<label class="control-label" for="indicator">Damage Indicator</label>
 						<div class="controls">
-							<input type="text" id="indicator" name="indicator" value="@form("indicator").value">
+							<select selectedIndex="@form("indicator").value">
+								<option value="0">None</option>
+								@for((indic, idx)<-DamageIndicator.all.zipWithIndex) {
+									<option value="@idx">@indic.id - @indic.description</option>
+								}
+							</select>
 						</div>
 					</div>
 					<div class="control-group">
