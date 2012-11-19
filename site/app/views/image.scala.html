@@ -32,7 +32,7 @@
 		</div>
 		<div class="well container">
 			<div class="row">
-				<div>
+				<img  class="big-image" src="@StorageBackend().lookup("images", Image(imageId).path)" class="span9">
 				<form class="form-horizontal span6" action="/images/edit/@imageId" method="post" id="image_form">
 					<div class="control-group">
 						<label class="control-label" for="capture_time">Capture Time</label>
@@ -115,8 +115,6 @@
 						</div>
 					</div>
 				</form>
-				</div>
-				<img  src="@StorageBackend().lookup("images", Image(imageId).path)">
 		</div>
 	</div>
 </body>

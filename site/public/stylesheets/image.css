@@ -1,4 +1,4 @@
 
-.container { width: 95%; }
-.image { width: 60%; }
+.container { width: 95%; text-align: center; }
+img.big-image { padding-bottom: 2em; }
 .right { float: right; }
