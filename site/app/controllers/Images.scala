@@ -29,15 +29,18 @@ object Images extends Controller with Auth with AuthConfigImpl {
 		}	
 
 	def edit(imageId: Long) =
-		authorizedAction(NormalUser) { implicit user => implicit request =>
+		optionalUserAction { implicit maybeUser => implicit request =>
 			val image = Image(imageId)
-			val form = imageToFormData(image)
-			Ok(
-				views.html.image(
-					imageId,
-					editImageForm.fill(form)
+			if (image.pending && !maybeUser.forall(_.id == image.user)) Forbidden("Not your image")
+			else {
+				val form = imageToFormData(image)
+				Ok(
+					views.html.image(
+						imageId,
+						editImageForm.fill(form)
+					)
 				)
-			)
+			}
 		}	
 
 	def editSubmit(imageId: Long) = authorizedAction(NormalUser) { implicit user => implicit request => 
@@ -61,7 +64,7 @@ object Images extends Controller with Auth with AuthConfigImpl {
 						views.html.image(
 							imageId,
 							form
-						)(flashSession, user)
+						)(flashSession, Some(user))
 					)
 			}
 		}
@@ -77,7 +80,7 @@ object Images extends Controller with Auth with AuthConfigImpl {
 				views.html.image(
 					imageId,
 					form
-				)(flash + ("message" -> error), user)
+				)(flash + ("message" -> error), Some(user))
 			)
 		}
 

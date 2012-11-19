@@ -1,7 +1,7 @@
 @(
 	imageId: Long,
 	form: Form[controllers.Images.EditImageFormData] = controllers.Images.editImageForm
-)(implicit flash: Flash, user: models.User)
+)(implicit flash: Flash, maybeUser: Option[models.User])
 
 @import views.nav._
 @import models._
