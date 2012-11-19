@@ -108,7 +108,12 @@
 							<input readonly type="text" id="onmap" name="onmap" value="@{!form("pending").value}">
 						</div>
 					</div>
-					<button class="btn btn-success" type="submit">Save</button>
+					<div class="control-group">
+						<div class="controls">
+							<input class="btn btn-success" type="submit" value="Save">
+							<input class="btn btn-danger" type="button" value="Delete">
+						</div>
+					</div>
 				</form>
 				</div>
 				<img  src="@StorageBackend().lookup("images", Image(imageId).path)">
