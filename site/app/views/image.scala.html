@@ -14,6 +14,7 @@
 <head>
 	<title>Edit Image</title>
 		<script type="text/javascript" src="/assets/javascripts/jquery-1.8.1.js"></script>
+		<script type="text/javascript" src="/assets/javascripts/edit.js"></script>
 		<link rel="stylesheet" href="/assets/stylesheets/bootstrap.css" />
 		<link rel="stylesheet" href="/assets/stylesheets/nav.css" />
 		<link rel="stylesheet" href="/assets/stylesheets/image.css" />
@@ -45,15 +46,15 @@
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label" for="lat">Latitude</label>
+						<label class="control-label" for="latitude">Latitude</label>
 						<div class="controls">
-							<input type="text" id="lat" name="lat" value="@form("lat").value">
+							<input type="text" id="latitude" name="latitude" value="@form("latitude").value">
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label" for="long">Longitude</label>
+						<label class="control-label" for="longitude">Longitude</label>
 						<div class="controls">
-							<input type="text" id="long" name="long" value="@form("long").value">
+							<input type="text" id="longitude" name="longitude" value="@form("longitude").value">
 						</div>
 					</div>
 					<div class="control-group">
@@ -82,7 +83,9 @@
 					<div class="control-group">
 						<label class="control-label" for="degree">Degree of Damage</label>
 						<div class="controls">
-							<input type="text" id="degree" name="degree" value="@form("degree").value">
+							<select selectedIndex="@form("degree").value" name="degree" id="degree">
+								<option value="0">None</option>
+							</select>
 						</div>
 					</div>
 					<div class="control-group">

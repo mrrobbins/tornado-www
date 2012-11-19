@@ -88,15 +88,15 @@ object Images extends Controller with Auth with AuthConfigImpl {
 		import image._
 		val df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.getDefault())
 		EditImageFormData(
-			time.map(t => df.format(new Date(t))),
-			df.format(new Date(timeUploaded*1000L)),
-			User.byId(user).email,
-			(!pending).toString,
-			lat,
-			long,
-			indicator,
-			degree,
-			notes
+			captureTime=time.map(t => df.format(new Date(t))),
+			uploadTime=df.format(new Date(timeUploaded*1000L)),
+			uploader=User.byId(user).email,
+			onMap=(!pending).toString,
+			latitude=lat,
+			longitude=long,
+			indicator=indicator,
+			degree=degree,
+			notes=notes
 		)	
 	}
 
