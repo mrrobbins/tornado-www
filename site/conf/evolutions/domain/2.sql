@@ -8,7 +8,7 @@ CREATE TABLE tornado_degree_of_damage (
   lowest_windspeed INTEGER NOT NULL,
   expected_windspeed INTEGER NOT NULL,
   highest_windspeed INTEGER NOT NULL,
-  PRIMARY KEY(_id, indicator_abbreviation),
+  PRIMARY KEY(id, indicator_abbreviation),
   FOREIGN KEY(
     indicator_abbreviation
   ) REFERENCES tornado_damage_indicator(
