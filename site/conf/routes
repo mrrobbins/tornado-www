@@ -25,6 +25,8 @@ GET   /login                      controllers.Accounts.login
 
 POST  /login                      controllers.Accounts.loginSubmit
 
+POST  /logout                     controllers.Accounts.logoutSubmit
+
 GET   /signup                     controllers.Accounts.signup
 
 POST  /signup                     controllers.Accounts.signupSubmit
@@ -34,6 +36,7 @@ GET   /data/*path                 controllers.FileServer.serve(path: String)
 POST  /api/images/upload          controllers.Images.Api.uploadImage
 
 GET   /photoqueue                 controllers.Images.queuePage
+
 
 # Map static resources from the /public folder to the /assets URL path
 GET  /assets/*file                controllers.Assets.at(path="/public", file)

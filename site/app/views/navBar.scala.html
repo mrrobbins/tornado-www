@@ -38,12 +38,18 @@
 			}
 			@NavBar.headerItems.map(item)
 		</ul>
-		<ul class="nav pull-right">
-			@optUser.maybeUser.map { user => 
-				@item(NavItem(user.email, ""))
-			}.getOrElse {
-				@item(NavBar.Login)
-			}
-		</ul>
+		@optUser.maybeUser.map { user => 
+			<form id="logoutform" action="/logout" method="post">
+				<ul class="nav pull-right">
+					<li>
+							<a href="javascript:document.getElementById('logoutform').submit()">@user.email</a>
+					</li>
+				</ul>
+			</form>
+		}.getOrElse {
+			<ul class="nav pull-right">
+			@item(NavBar.Login)
+			</ul>
+		}
 	</div>
 </div>

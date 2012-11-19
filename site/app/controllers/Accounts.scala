@@ -59,6 +59,11 @@ object Accounts extends Controller with LoginLogout with Auth with AuthConfigImp
 		Ok(views.html.signup())
 	}
 
+	def logoutSubmit = Action { implicit request =>
+		gotoLogoutSucceeded
+	}
+
+
 	val userLoginForm = Form(
 		mapping(
 			"email" -> email,
