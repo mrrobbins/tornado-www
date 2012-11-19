@@ -1,4 +1,5 @@
 
-.container { width: 95%; text-align: center; }
+.container { width: 95%; }
 img.big-image { padding-bottom: 2em; }
 .right { float: right; }
+.center { text-align: center; }
