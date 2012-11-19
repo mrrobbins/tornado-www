@@ -24,5 +24,4 @@ $(function() {
 		populateDegree(this.value);
 	} );
 
-	$('#indicator').change();
 } );$

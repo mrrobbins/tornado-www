@@ -38,7 +38,11 @@ object DamageIndicator {
 	}
 
 	def withAbbrev(abbrev: String)(implicit conn: Connection = null) = ensuringConnection("domain") { implicit conn =>
-		all.find(_.abbreviation == abbrev).getOrElse(throw new NoSuchElementException("No indicator with given abbreviation"))
+		all.find(_.abbreviation == abbrev).getOrElse(throw new NoSuchElementException("No indicator with abbreviation " + abbrev))
+	}
+
+	def withId(id: Int)(implicit conn: Connection = null) = ensuringConnection("domain") { implicit conn =>
+		all.find(_.id == id).getOrElse(throw new NoSuchElementException("No indicator with id " + id))
 	}
 
 }

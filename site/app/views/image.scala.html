@@ -72,10 +72,14 @@
 					<div class="control-group">
 						<label class="control-label" for="indicator">Damage Indicator</label>
 						<div class="controls">
-							<select selectedIndex="@form("indicator").value" name="indicator" id="indicator">
+							<select name="indicator" id="indicator">
 								<option value="0">None</option>
 								@for(i<-DamageIndicator.all) {
-									<option value="@i.id">@i.id - @i.description</option>
+									@if(Some(i.id.toString) == form("indicator").value) {
+										<option value="@i.id" selected="selected">@i.id - @i.description</option>
+									} else {
+										<option value="@i.id">@i.id - @i.description</option>
+									}
 								}
 							</select>
 						</div>
@@ -85,6 +89,15 @@
 						<div class="controls">
 							<select selectedIndex="@form("degree").value" name="degree" id="degree">
 								<option value="0">None</option>
+								@form("indicator").value.map { indicator =>
+									@for(d<-DamageIndicator.withId(indicator.toInt).degrees) {
+										@if(Some(d.id.toString) == form("degree").value) {
+											<option value="@d.id" selected="selected">@d.id - @d.description</option>
+										} else {
+											<option value="@d.id">@d.id - @d.description</option>
+										}
+									}
+								}
 							</select>
 						</div>
 					</div>
