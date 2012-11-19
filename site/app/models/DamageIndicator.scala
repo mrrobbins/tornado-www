@@ -28,8 +28,8 @@ object DamageIndicator {
 		val indicators = query().map { row =>
 			DamageIndicator(
 				row[Long]("id"),
-				row[String]("abbreviation"),
-				row[String]("description")
+				row[String]("description"),
+				row[String]("abbreviation")
 			)
 		} toList
 
