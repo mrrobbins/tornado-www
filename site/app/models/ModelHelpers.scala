@@ -9,7 +9,7 @@ import play.api.db.DB
 object ModelHelpers {
 
 	def ensuringConnection[T](database: String)(func: Connection => T)(implicit conn: Connection): T = {
-		if (conn == null) DB.withConnection(func)
+		if (conn == null) DB.withConnection(database)(func)
 		else func(conn)
 	}
 
@@ -17,7 +17,7 @@ object ModelHelpers {
 		ensuringConnection("default")(func)(conn)
 
 	def ensuringTransaction[T](database: String)(func: Connection => T)(implicit trans: Connection): T = {
-		if (trans == null || trans.getAutoCommit) DB.withTransaction { t =>
+		if (trans == null || trans.getAutoCommit) DB.withTransaction(database) { t =>
 				try {
 					val res = func(t)
 					t.commit()
