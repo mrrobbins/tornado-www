@@ -1,4 +1,7 @@
-@(form: Form[controllers.Images.EditImageFormData] = controllers.Images.editImageForm)(implicit flash: Flash, user: models.User)
+@(
+	imageId: Long,
+	form: Form[controllers.Images.EditImageFormData] = controllers.Images.editImageForm
+)(implicit flash: Flash, user: models.User)
 
 @import views.nav._
 @import models._
@@ -27,30 +30,18 @@
 			}
 		</div>
 		<div class="well container">
-				<img class="image" src="@form("path").value.map(path => StorageBackend().lookup("images", path))">
-				<form class="form-horizontal span6" action="/images/edit" method="post" id="image_form">
+				<img class="image" src="@StorageBackend().lookup("images", Image(imageId).path)">
+				<form class="form-horizontal span6" action="/images/edit/@imageId" method="post" id="image_form">
 					<div class="control-group">
-						<label class="control-label" for="id">ID</label>
+						<label class="control-label" for="capture_time">Capture Time</label>
 						<div class="controls">
-							<input readonly type="text" id="id" name="id" value="@form("id").value">
+							<input readonly type="text" id="capture_time" name="capture_time" value="@form("capture_time").value">
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label" for="path">Path</label>
+						<label class="control-label" for="upload_time">Upload Time</label>
 						<div class="controls">
-							<input readonly type="text" id="path" name="path" value="@form("path").value">
-						</div>
-					</div>
-					<div class="control-group">
-						<label class="control-label" for="time">Time</label>
-						<div class="controls">
-							<input readonly type="text" id="time" name="time" value="@form("time").value">
-						</div>
-					</div>
-					<div class="control-group">
-						<label class="control-label" for="uploaded">Uploaded</label>
-						<div class="controls">
-							<input readonly type="text" id="lat" name="uploaded" value="@form("uploaded").value">
+							<input readonly type="text" id="upload_time" name="upload_time" value="@form("upload_time").value">
 						</div>
 					</div>
 					<div class="control-group">
@@ -66,9 +57,9 @@
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label" for="user">User</label>
+						<label class="control-label" for="uploader">Uploader</label>
 						<div class="controls">
-							<input readonly type="text" id="user" name="user" value="@form("user").value">
+							<input readonly type="text" id="uploader" name="uploader" value="@form("uploader").value">
 						</div>
 					</div>
 					<div class="control-group">
@@ -80,10 +71,10 @@
 					<div class="control-group">
 						<label class="control-label" for="indicator">Damage Indicator</label>
 						<div class="controls">
-							<select selectedIndex="@form("indicator").value">
+							<select selectedIndex="@form("indicator").value" name="indicator" id="indicator">
 								<option value="0">None</option>
-								@for((indic, idx)<-DamageIndicator.all.zipWithIndex) {
-									<option value="@idx">@indic.id - @indic.description</option>
+								@for(i<-DamageIndicator.all) {
+									<option value="@i.id">@i.id - @i.description</option>
 								}
 							</select>
 						</div>
@@ -95,15 +86,9 @@
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label" for="collectionId">Collection ID</label>
+						<label class="control-label" for="onmap">On Map</label>
 						<div class="controls">
-							<input readonly type="text" id="collectionId" name="collectionId" value="@form("collectionId").value">
-						</div>
-					</div>
-					<div class="control-group">
-						<label class="control-label" for="pending">Is Pending</label>
-						<div class="controls">
-							<input readonly type="text" id="pending" name="pending" value="@form("pending").value">
+							<input readonly type="text" id="onmap" name="onmap" value="@{!form("pending").value}">
 						</div>
 					</div>
 					<button class="btn btn-success" type="submit">Save</button>

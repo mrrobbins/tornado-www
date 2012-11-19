@@ -13,7 +13,7 @@ GET   /api/images/addToCollection controllers.Images.Api.addToCollection(imageId
 
 GET   /images/edit/:id            controllers.Images.edit(id: Long)
 
-POST  /images/edit                controllers.Images.editSubmit
+POST  /images/edit/:id            controllers.Images.editSubmit(id: Long)
 
 GET   /api/map/markers/all        controllers.Maps.Api.allMarkers
 

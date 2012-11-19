@@ -110,7 +110,7 @@ object User {
 
 		val users = mapUsers(query())
 		assert((0 to 1).contains(users.length), "Duplicate id in database")
-		users.headOption.getOrElse(throw new SQLException("No user with id"))
+		users.headOption.getOrElse(throw new SQLException("No user with id " + id))
 	}
 
 	/** Retrieve a list of all users in the database

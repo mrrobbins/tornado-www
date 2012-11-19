@@ -30,15 +30,20 @@ object Images extends Controller with Auth with AuthConfigImpl {
 
 	def edit(imageId: Long) =
 		authorizedAction(NormalUser) { implicit user => implicit request =>
-			val form = imageToFormData(Image(imageId))
-			Ok(views.html.image(editImageForm.fill(form)))
+			val image = Image(imageId)
+			val form = imageToFormData(image)
+			Ok(
+				views.html.image(
+					imageId,
+					editImageForm.fill(form)
+				)
+			)
 		}	
 
-	def editSubmit =
-		authorizedAction(NormalUser) { implicit user => implicit request =>
+	def editSubmit(imageId: Long) = authorizedAction(NormalUser) { implicit user => implicit request => 
 		editImageForm.bindFromRequest()
 		def success(data: EditImageFormData) = Async {
-			val image = Image(data.id).copy(
+			val image = Image(imageId).copy(
 				notes=data.notes, 
 				indicator=data.indicator, 
 				degree=data.degree,
@@ -52,9 +57,15 @@ object Images extends Controller with Auth with AuthConfigImpl {
 				case _: Exception =>
 					val form = editImageForm.fill(data)
 					val flashSession = flash + ("message" -> "Failed to update image")
-					InternalServerError(views.html.image(form)(flashSession, user))
+					InternalServerError(
+						views.html.image(
+							imageId,
+							form
+						)(flashSession, user)
+					)
 			}
 		}
+
 		def failure(form: Form[EditImageFormData]) = {
 			val json = form.errorsAsJson.asInstanceOf[JsObject]
 			val error = json \ "" match {
@@ -62,14 +73,12 @@ object Images extends Controller with Auth with AuthConfigImpl {
 				case value: JsArray => value(0).as[String]
 				case _ => "Bad data"
 			}
-			val imageId = form("id").value
-			if (imageId.isDefined) {
-				val image = Image(imageId.get.toLong)
-				println(json.toString)
-				BadRequest(views.html.image(form)(flash + ("message" -> error), user))
-			} else {
-				Redirect("/photoqueue")
-			}
+			BadRequest(
+				views.html.image(
+					imageId,
+					form
+				)(flash + ("message" -> error), user)
+			)
 		}
 
 		editImageForm.bindFromRequest().fold(failure, success)
@@ -79,50 +88,41 @@ object Images extends Controller with Auth with AuthConfigImpl {
 		import image._
 		val df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.getDefault())
 		EditImageFormData(
-			id,
-			path,
 			time.map(t => df.format(new Date(t))),
 			df.format(new Date(timeUploaded*1000L)),
+			User.byId(user).email,
+			(!pending).toString,
 			lat,
 			long,
-			user,
-			notes,
 			indicator,
 			degree,
-			collectionId,
-			pending.toString
+			notes
 		)	
 	}
 
 	case class EditImageFormData(
-		id: Long,
-		path: String,
-		time: Option[String],
-		uploaded: String,
+		captureTime: Option[String],
+		uploadTime: String,
+		uploader: String,
+		onMap: String,
 		latitude: Option[Double],
 		longitude: Option[Double],
-		user: Long,
-		notes: String,
 		indicator: Int,
 		degree: Int,
-		collectionId: Option[Long],
-		pending: String
+		notes: String
 	)
 
 	val editImageForm = Form (
 		mapping(
-			"id" -> longNumber,
-			"path" -> text,
-			"time" -> optional(text),
-			"uploaded" -> text,
-			"lat" -> optional(doubleDecimal),
-			"long" -> optional(doubleDecimal),
-			"user" -> longNumber,
-			"notes" -> text,
+			"capture_time" -> optional(text),
+			"upload_time" -> text,
+			"uploader" -> text,
+			"onmap" -> text,
+			"latitude" -> optional(doubleDecimal),
+			"longitude" -> optional(doubleDecimal),
 			"indicator" -> number,
 			"degree" -> number,
-			"collectionId" -> optional(longNumber),
-			"pending" -> text
+			"notes" -> text
 		)(EditImageFormData.apply)(EditImageFormData.unapply)
 	)
 
