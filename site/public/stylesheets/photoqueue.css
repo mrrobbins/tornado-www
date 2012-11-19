@@ -6,3 +6,4 @@ div.thumbnail img { height: 12em; width: 12em; }
 li { list-style-type: none; }
 .container { width: 95%; }
 .header-btn { float: right; }
+.center { text-align: center; }
