@@ -46,16 +46,20 @@ object Images extends Controller with Auth with AuthConfigImpl {
 	def editSubmit(imageId: Long) = authorizedAction(NormalUser) { implicit user => implicit request => 
 		editImageForm.bindFromRequest()
 		def success(data: EditImageFormData) = Async {
-			val image = Image(imageId).copy(
-				notes=data.notes, 
-				indicator=data.indicator, 
-				degree=data.degree,
-				lat=data.latitude,
-				long=data.longitude
-			)
 			Akka.future {
-				Image.update(image)
-				Redirect("/photoqueue").flashing("message" -> "Uploaded Sucessfully")
+				val orig = Image(imageId)
+				if (orig.user != user.id && !user.isAdmin) Forbidden("Not your image")
+				else {
+					val image = orig.copy(
+						notes=data.notes, 
+						indicator=data.indicator, 
+						degree=data.degree,
+						lat=data.latitude,
+						long=data.longitude
+					)
+					Image.update(image)
+					Redirect("/photoqueue").flashing("message" -> "Uploaded Sucessfully")
+				}
 			} recover {
 				case _: Exception =>
 					val form = editImageForm.fill(data)
