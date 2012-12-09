@@ -24,4 +24,17 @@ $(function() {
 		populateDegree(this.value);
 	} );
 
+	$('#save_btn').click(function() {
+		var form = $('#image_form');
+		var imageId = form.attr('action');
+		form.attr('action', '/images/edit/' + imageId);
+		form.submit();
+	});
+	$('#delete_btn').click(function() {
+		var form = $('#image_form');
+		var imageId = form.attr('action');
+		form.attr('action', '/api/images/delete/' + imageId);
+		form.submit();
+	});
+
 } );$

@@ -33,7 +33,7 @@
 		<div class="well container center">
 			<div class="row">
 				<img  class="big-image span9" src="@StorageBackend().lookup("images", Image(imageId).path)" >
-				<form class="form-horizontal span6" action="/images/edit/@imageId" method="post" id="image_form">
+				<form class="form-horizontal span6" action="@imageId" method="post" id="image_form">
 					<div class="control-group">
 						<label class="control-label" for="capture_time">Capture Time</label>
 						<div class="controls">
@@ -110,8 +110,8 @@
 					</div>
 					<div class="control-group">
 						<div class="controls">
-							<input class="btn btn-success" type="submit" value="Save">
-							<input class="btn btn-danger" type="button" value="Delete">
+							<input class="btn btn-success" type="button" id="save_btn" value="Save">
+							<input class="btn btn-danger" type="button" id="delete_btn" value="Delete">
 						</div>
 					</div>
 				</form>

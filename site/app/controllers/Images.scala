@@ -146,28 +146,19 @@ object Images extends Controller with Auth with AuthConfigImpl {
 		}
 
 		def createCollection = Action(parse.urlFormEncoded) { request =>
-			// get the id for all images selected
-			val checkedRows =
-				request.body.filter(row => row._2.contains("on")).keySet
-			val selectedImages = checkedRows.toSeq.map(_.toLong)
-			
-			Async { Akka.future {
-				val primaryImage = Image.pending(selectedImages.head).get
-				val newCollection = CollectionTemplate(
-					"[address]",
-					"[location_description]",
-					primaryImage.notes,
-					primaryImage.indicator,
-					primaryImage.degree,
-					primaryImage.id,
-					selectedImages.tail
-				)
-
-				Collection.insert(newCollection)
-
 				Redirect("/photoqueue")
-			} }
+		}
 
+		def delete(id: Long) = authorizedAction(NormalUser) { implicit user => implicit request => 
+			Async {
+				Akka.future {
+					Image.delete(id)
+					Redirect("/photoqueue").flashing("message" -> "Image was deleted")
+				} recover {
+					case _: Exception =>
+						Redirect("/photoqueue").flashing("message" -> "Error deleting photo")
+				}
+			}
 		}
 
 		def uploadImage =

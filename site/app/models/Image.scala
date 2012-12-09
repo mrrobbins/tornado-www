@@ -195,6 +195,41 @@ object Image {
 		if(secondaryImageUpdate.executeUpdate() != 1) throw new SQLException("Failed to update collection image data")
 	}
 
+	def delete(id: Long)(implicit trans: Connection = null) = ensuringTransaction { implicit trans =>
+
+		val image = Image(id)
+		
+		if (image.pending){
+			val pendingImageDelete = SQL(
+				"""
+					DELETE FROM pending_image WHERE image_id = {id};
+				"""
+			).on(
+				"id" -> id
+			)
+			if (1 != pendingImageDelete.executeUpdate()) throw new SQLException("Failed to delete image")
+		} else {
+			val collectionImageDelete = SQL(
+				"""
+					DELETE FROM collection_image WHERE image_id = {id};
+				"""
+			).on(
+				"id" -> id
+			)
+			
+			if (1 != collectionImageDelete.executeUpdate()) throw new SQLException("Failed to delete image")
+		}
+
+		val imageDelete = SQL(
+			"""
+				DELETE FROM image WHERE id = {id};
+			"""
+		).on(
+				"id" -> id
+		)
+		if (1 != imageDelete.executeUpdate()) throw new SQLException("Failed to delete image")
+	}
+
 	def insert(template: ImageTemplate)(implicit trans: Connection = null): Long = ensuringTransaction { implicit trans =>
 		val imageInsertion = SQL(
 			"""

@@ -14,7 +14,6 @@ case class CollectionTemplate(
 	notes: String,
   damageIndicator: Int,
   degreeOfDamage: Int,
-	primaryImageId: Long,
 	secondaryImages: Seq[Long]
 )
 
@@ -27,7 +26,6 @@ case class Collection(
 	notes: String,
 	damageIndicator: Int,
 	degreeOfDamage: Int,
-	primaryImage: Long,
 	secondaryImages: Seq[Long]
 )
 
@@ -36,22 +34,21 @@ object Collection {
 	def insert(c: CollectionTemplate)(implicit trans: Connection = null): Long = ensuringTransaction { implicit trans =>
 		val newCollection = SQL(
 			"""
-				INSERT INTO collection (time_created, gps_address, address, location_description, notes, primary_image_id, damage_indicator, degree_of_damage) 
-				VALUES (UNIX_TIMESTAMP(), {gpsAddr}, {addr}, {desc}, {notes}, {priImg}, {indicator}, {degree})
+				INSERT INTO collection (time_created, gps_address, address, location_description, notes, damage_indicator, degree_of_damage) 
+				VALUES (UNIX_TIMESTAMP(), {gpsAddr}, {addr}, {desc}, {notes}, {indicator}, {degree})
 			"""
 		).on(
 			"gpsAddr" -> "",
 			"addr" -> c.address, 
 			"desc" -> c.locationDescription,
 			"notes" -> c.notes,
-			"priImg" -> c.primaryImageId,
 			"indicator" -> c.damageIndicator,
 			"degree" -> c.degreeOfDamage
 		)
 
 			val priKey = newCollection.executeInsert().getOrElse(throw new SQLException("Failed to create collection"))
 
-			for (id <- c.secondaryImages :+ c.primaryImageId) {
+			for (id <- c.secondaryImages) {
 				val pendingImage = Image.pending(id)
 				Image.addToCollection(id, priKey)
 			}
@@ -90,7 +87,6 @@ object Collection {
 				row[String]("notes"),
 				row[Int]("damage_indicator"),
 				row[Int]("degree_of_damage"),
-				row[Long]("primary_image_id"),
 				imageList
 			)
 		} toList
