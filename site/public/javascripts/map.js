@@ -208,11 +208,11 @@ $(window).load(function() {
 	}
 
 	function loadLocation() {
-		if (window.sessionStorage) {
-				var s = sessionStorage
-				var lat = JSON.parse(s.prevLat);
-				var lng = JSON.parse(s.prevLng);
-				var zoom = JSON.parse(s.prevZoom);
+		if (window.localStorage) {
+				var ls = localStorage
+				var lat = JSON.parse(ls.prevLat);
+				var lng = JSON.parse(ls.prevLng);
+				var zoom = JSON.parse(ls.prevZoom);
 				if (lat && lng && zoom) {
 					var center = new google.maps.LatLng(lat, lng);
 					map.setCenter(center);
@@ -222,15 +222,15 @@ $(window).load(function() {
 	}
 
 	function saveLocation() {
-		if (window.sessionStorage) {
-			var s = sessionStorage
+		if (window.localStorage) {
+			var ls = localStorage
 			var center = map.getCenter();
 			var lat = center.lat();
 			var lng = center.lng();
 			var zoom = map.getZoom();
-			s.prevLat = JSON.stringify(lat);
-			s.prevLng = JSON.stringify(lng);
-			s.prevZoom = JSON.stringify(zoom);
+			ls.prevLat = JSON.stringify(lat);
+			ls.prevLng = JSON.stringify(lng);
+			ls.prevZoom = JSON.stringify(zoom);
 		}
 	}
 
