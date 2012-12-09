@@ -10,23 +10,12 @@ var gcStatus = google.maps.GeocoderStatus
 var markerDescriptors = [];
 var markers = {};
 
-
 $(window).load(function() {
 	var map = new google.maps.Map($('#map_canvas')[0], mapOptions);
 
 	function resizeMap() {
 		google.maps.event.trigger(map, 'resize');
 	};
-
-	resizeMap();
-
-	geocodeAddress('United States', function(results, state) {
-		if (gcStatus.OK == state) {
-			var geom = results[0].geometry
-			map.setCenter(geom.location);
-			map.fitBounds(geom.viewport);
-		}
-	});
 
 	queryMarkers();
 
@@ -218,7 +207,47 @@ $(window).load(function() {
 		showMarkerGroup('results');
 	}
 
+	function loadLocation() {
+		if (window.sessionStorage) {
+				var s = sessionStorage
+				var lat = JSON.parse(s.prevLat);
+				var lng = JSON.parse(s.prevLng);
+				var zoom = JSON.parse(s.prevZoom);
+				if (lat && lng && zoom) {
+					var center = new google.maps.LatLng(lat, lng);
+					map.setCenter(center);
+					map.setZoom(zoom);
+				}
+		}
+	}
+
+	function saveLocation() {
+		if (window.sessionStorage) {
+			var s = sessionStorage
+			var center = map.getCenter();
+			var lat = center.lat();
+			var lng = center.lng();
+			var zoom = map.getZoom();
+			s.prevLat = JSON.stringify(lat);
+			s.prevLng = JSON.stringify(lng);
+			s.prevZoom = JSON.stringify(zoom);
+		}
+	}
+
+	geocodeAddress('United States', function(results, state) {
+		resizeMap();
+		if (gcStatus.OK == state) {
+			var geom = results[0].geometry
+			map.setCenter(geom.location);
+			map.fitBounds(geom.viewport);
+			loadLocation();
+		}
+	});
+
+	$(window).unload(saveLocation);
+
 });
+
 
 function geocodeAddress(address, callback) {
 	var request = {
