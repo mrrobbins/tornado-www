@@ -10,6 +10,11 @@ $(window).load(function() {
 		var form = $('form#add_form');
 		form.find('input[name=imageIds]').attr('value', ids);
 		form.find('input[name=collectionName]').attr('value', collection);
+
+		if (window.sessionStorage) {
+			sessionStorage.prevCollection = collection;
+		}
+
 		form.submit();
 		return false;
 	});
@@ -18,6 +23,11 @@ $(window).load(function() {
 		var collection = $('.collection-box').attr('value');
 		var form = $('form#create_form');
 		form.find('input[name=name]').attr('value', collection);
+
+		if (window.sessionStorage) {
+			sessionStorage.prevCollection = collection;
+		}
+
 		form.submit();
 		return false;
 	});
@@ -26,9 +36,18 @@ $(window).load(function() {
 		var collection = $('.collection-box').attr('value');
 		var form = $('form#delete_form');
 		form.find('input[name=name]').attr('value', collection);
+
+		if (window.sessionStorage) {
+			sessionStorage.removeItem('prevCollection');
+		}
+
 		form.submit();
 		return false;
 	});
+
+	if (window.sessionStorage && sessionStorage.prevCollection) {
+		$('.collection-box').attr('value', sessionStorage.prevCollection);
+	}
 
 });
 
