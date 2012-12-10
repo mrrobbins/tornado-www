@@ -1,11 +1,5 @@
 # --- !Ups
 
-CREATE TABLE case_study (
-	id BIGINT PRIMARY KEY AUTO_INCREMENT,
-	name VARCHAR(256) NOT NULL,
-	description VARCHAR(10240) NOT NULL 
-);
-
 CREATE TABLE user (
 	id BIGINT PRIMARY KEY AUTO_INCREMENT,
 	email VARCHAR(128) UNIQUE NOT NULL,
@@ -18,5 +12,4 @@ CREATE TABLE user (
 # --- !Downs
 
 DROP TABLE user;
-DROP TABLE case_study;
 
