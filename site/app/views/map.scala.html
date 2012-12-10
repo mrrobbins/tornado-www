@@ -1,6 +1,8 @@
 @()(implicit maybeUser: Option[models.User])
 
 @import views.nav._
+@import play.api.Play.current
+@import play.api.Play.{configuration=>config}
 
 <!DOCTYPE html>
 <html>
@@ -11,7 +13,10 @@
 		<link rel="stylesheet" href="assets/stylesheets/map.css" />
 		<link rel="stylesheet" href="assets/stylesheets/nav.css" />
 		<title>Damage Map</title>
-		<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCRAwWsAJ4AolCZHLze4SmLubVO1fffTU8&amp;sensor=false"></script>
+		<script
+			type="text/javascript"
+			src="http://maps.googleapis.com/maps/api/js?key=@{config.getString("google.maps.apiKey")}&amp;sensor=false"
+		></script>
 		<script type="text/javascript" src="assets/javascripts/styledmarker.js"></script>
 		<script type="text/javascript" src="assets/javascripts/jquery-1.8.1.js"></script>
 		<script type="text/javascript" src="assets/javascripts/map.js"></script>
