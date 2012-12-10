@@ -22,14 +22,16 @@ case class Image(
 	pending: Boolean
 ) {
 
-	def addToCollection(collectionId: Long) { Image.addToCollection(id, collectionId) }
+	def addToCollection(collectionId: Long) {
+		Image.addToCollection(id, collectionId)
+	}
 
 	lazy val efRating = {
 		if (indicator != 0 && degree != 0) {
 			val di = DamageIndicator.withId(indicator)
 			val dg = di.degrees.filter(_.id == degree)
 			dg match {
-				case Seq(dg) => Some(EFRating(dg.expectedWindSpeed))
+				case Seq(dg) => EFRating(dg.expectedWindSpeed)
 				case _ => None
 			}
 		} else None

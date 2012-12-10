@@ -11,7 +11,8 @@ case class Marker(
 	description: String,
 	latitude: Option[Double],
 	longitude: Option[Double],
-	markerType: String
+	markerType: String,
+	efRating: Option[Int]
 )
 
 object Marker {
@@ -23,7 +24,8 @@ object Marker {
 				image.notes,
 				image.lat,
 				image.long,
-				"standardImage"
+				"standardImage",
+				image.efRating
 			)
 		}
 		pending

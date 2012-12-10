@@ -28,15 +28,18 @@ object Maps extends Controller with Auth with AuthConfigImpl {
 
 		def allMarkers = Action { Async { Akka.future {
 
-			val allMarkers = Marker.all.map(marker =>
+			val allMarkers = Marker.all.map { marker =>
+
+				val rating = toJson(marker.efRating.map(_.toString).getOrElse("-1"))
 				Map(
 					"id" -> toJson(marker.id),
 					"name" -> toJson(marker.description), 
 					"lat" -> toJson(marker.latitude), 
 					"long" -> toJson(marker.longitude),
-					"type" -> toJson(marker.markerType)
+					"type" -> toJson(marker.markerType),
+					"efRating" -> rating
 				)
-			)
+			}
 
 			val allMarkersJson = toJson(Map("markers" -> toJson(allMarkers)))
 

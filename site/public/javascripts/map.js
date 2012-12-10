@@ -10,6 +10,18 @@ var gcStatus = google.maps.GeocoderStatus
 var markerDescriptors = [];
 var markers = {};
 
+var sm = StyledIconTypes.MARKER
+var efColors = {
+	'-1': '55FF55',
+	'0': '00FAF4',
+	'1': 'FFFFCC',
+	'2': 'FFE775',
+	'3': 'FFC140',
+	'4': 'FF8F20',
+	'5': 'FF6060'
+}
+
+
 $(window).load(function() {
 	var map = new google.maps.Map($('#map_canvas')[0], mapOptions);
 
@@ -122,9 +134,16 @@ $(window).load(function() {
 			function redraw(i){
 				var desc = markerDescriptors[i];
 				var pos = new google.maps.LatLng(desc.lat, desc.long);
-				var marker = new google.maps.Marker({
+				var color = efColors[desc.efRating];
+				var label = desc.efRating;
+				if (label == -1) label = 'N';
+				var marker = new StyledMarker({
 					position: pos,
-					title: desc.name
+					title: desc.name,
+					styleIcon: new StyledIcon(
+						StyledIconTypes.MARKER,
+						{text: label, color: color}
+					)
 				});
 
 				function markerClickHandler() {
