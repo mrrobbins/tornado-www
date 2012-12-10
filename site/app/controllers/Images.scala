@@ -60,9 +60,7 @@ object Images extends Controller with Auth with AuthConfigImpl {
 						long=data.longitude
 					)
 					Image.update(image)
-					println("here")
 					session.get("lastEditor").map { lastEditor =>
-						println(lastEditor)
 						Redirect(lastEditor)
 					} getOrElse {
 						Redirect("/map").flashing("message" -> "Edit Sucessful")
