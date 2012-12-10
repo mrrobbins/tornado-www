@@ -48,57 +48,59 @@ object Image {
 			"""
 		).on("imageId" -> id)
 		
-		imageQuery().headOption.map { row =>
+		imageQuery() match {
+			case Seq(row) =>
 
-			val collectionId = row[Option[Long]]("collection_id")
-			// if image is not in collection table it must be in pending table
-			if (collectionId.isEmpty && row[Option[Long]]("pending_image.image_id").isEmpty) {
-				throw new SQLException("Orphan image - not in a collection or pending")
-			}
+				val collectionId = row[Option[Long]]("collection_id")
+				// if image is not in collection table it must be in pending table
+				if (collectionId.isEmpty && row[Option[Long]]("pending_image.image_id").isEmpty) {
+					throw new SQLException("Orphan image - not in a collection or pending")
+				}
 
-			// Get notes or throw an exception:
-			// First check if collection_image.notes is NULL
-			// If not, take that. If so, check pending_image.notes.
-			// If both are NULL, we throw an exception
-			val notes = row[Option[String]](
-				"collection_image.notes"
-			) orElse row[Option[String]](
-				"pending_image.notes"
-			) getOrElse (
-				throw new SQLException("Image has no notes")
-			)
+				// Get notes or throw an exception:
+				// First check if collection_image.notes is NULL
+				// If not, take that. If so, check pending_image.notes.
+				// If both are NULL, we throw an exception
+				val notes = row[Option[String]](
+					"collection_image.notes"
+				) orElse row[Option[String]](
+					"pending_image.notes"
+				) getOrElse (
+					throw new SQLException("Image has no notes")
+				)
 
-			val indicator = row[Option[Int]](
-				"collection_image.damage_indicator"
-			) orElse row[Option[Int]](
-				"pending_image.damage_indicator"
-			) getOrElse (
-				throw new SQLException("Image has no damage indicator")
-			)
+				val indicator = row[Option[Int]](
+					"collection_image.damage_indicator"
+				) orElse row[Option[Int]](
+					"pending_image.damage_indicator"
+				) getOrElse (
+					throw new SQLException("Image has no damage indicator")
+				)
 
-			val degree = row[Option[Int]](
-				"collection_image.degree_of_damage"
-			) orElse row[Option[Int]](
-				"pending_image.degree_of_damage"
-			) getOrElse (
-				throw new SQLException("Image has no degree of damage")
-			)
+				val degree = row[Option[Int]](
+					"collection_image.degree_of_damage"
+				) orElse row[Option[Int]](
+					"pending_image.degree_of_damage"
+				) getOrElse (
+					throw new SQLException("Image has no degree of damage")
+				)
 
-			Image(
-				id=row[Long]("id"),
-				path=row[String]("picture_path"),
-				time=row[Option[Long]]("time_captured"),
-				timeUploaded=row[Long]("time_uploaded"),
-				lat=row[Option[Double]]("latitude"),
-				long=row[Option[Double]]("longitude"),
-				user=row[Long]("image.user_id"),
-				notes=notes,
-				indicator=indicator,
-				degree=degree,
-				collectionId=collectionId,
-				pending=collectionId.isEmpty
-			)
-		}.getOrElse(throw new SQLException("Image not found"))
+				Image(
+					id=row[Long]("id"),
+					path=row[String]("picture_path"),
+					time=row[Option[Long]]("time_captured"),
+					timeUploaded=row[Long]("time_uploaded"),
+					lat=row[Option[Double]]("latitude"),
+					long=row[Option[Double]]("longitude"),
+					user=row[Long]("image.user_id"),
+					notes=notes,
+					indicator=indicator,
+					degree=degree,
+					collectionId=collectionId,
+					pending=collectionId.isEmpty
+				)
+			case _ => throw new SQLException("Id does not refer to a single image")
+		}
 	}
 
 	def all(userId: Long = User.NoUser.id)(implicit conn: Connection = null): List[Image] = ensuringConnection { implicit conn =>
