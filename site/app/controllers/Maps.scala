@@ -12,7 +12,9 @@ import play.api.Play.current
 object Maps extends Controller with Auth with AuthConfigImpl {
 
   def page = optionalUserAction { implicit maybeUser => implicit request =>
-			Ok(views.html.map())
+			Ok(views.html.map()).withSession(
+				session + ("lastEditor" -> "/map")
+			)
 	}
 
 	object Api {

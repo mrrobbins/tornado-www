@@ -21,7 +21,9 @@ import models.ModelHelpers.ensuringTransaction
 object Images extends Controller with Auth with AuthConfigImpl {
 
 	def queuePage = authorizedAction(NormalUser) { implicit user => implicit request =>
-			Ok(views.html.photoQueue())	
+			Ok(views.html.photoQueue()).withSession(
+				session + ("lastEditor" -> "/photoqueue")
+			)
 	}
 
 	def uploadPage = authorizedAction(NormalUser) { implicit user => implicit request =>
@@ -58,7 +60,13 @@ object Images extends Controller with Auth with AuthConfigImpl {
 						long=data.longitude
 					)
 					Image.update(image)
-					Redirect("/photoqueue").flashing("message" -> "Uploaded Sucessfully")
+					println("here")
+					session.get("lastEditor").map { lastEditor =>
+						println(lastEditor)
+						Redirect(lastEditor)
+					} getOrElse {
+						Redirect("/map").flashing("message" -> "Edit Sucessful")
+					}
 				}
 			} recover {
 				case _: Exception =>
