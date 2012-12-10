@@ -10,5 +10,8 @@ div.thumbnail img { height: 12em; width: 12em; }
 .edit { position: absolute; bottom: 8px; left: 10px; }
 li { list-style-type: none; }
 .container { width: 95%; }
-.header-btn { float: right; }
+.header-controls { float: right; }
+.header-control { margin-left: 2px; margin-right: 2px; }
 .center { text-align: center; }
+.collection-box { margin-right: 0px; }
+.hidden { visibility: hidden; height: 0px; width: 0px; }

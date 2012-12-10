@@ -11,21 +11,69 @@
 <head>
 		<script type="text/javascript" src="/assets/javascripts/jquery-1.8.1.js"></script>
 		<script type="text/javascript" src="/assets/javascripts/photo-queue.js"></script>
+		<script type="text/javascript" src="/assets/javascripts/bootstrap.js"></script>
 		<link rel="stylesheet" href="/assets/stylesheets/bootstrap.css" />
 		<link rel="stylesheet" href="/assets/stylesheets/nav.css" />
 		<link rel="stylesheet" href="/assets/stylesheets/photoqueue.css" />
+		<title>Photo Queue</title>
 </head>
 <body>
 @views.html.navBar(Some(NavBar.PhotoQueue), None)
 <div id="content" class="container">
 <div class="page-header">
-		<button class="add-btn btn btn-success header-btn">Add to Map</button>
+	@if(user.isAdmin) {
 		<h1>Add Photos to Collections</h1>
+		<form class="form-inline pull-right">
+			<div class="input-append">
+			<div class="btn-group">
+			<input type="text" class="header-control collection-box">
+				<button class="btn dropdown-toggle" data-toggle="dropdown">
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu" role="menu">
+					@for(collection <- Collection.all) {
+						<li>
+							<a
+								href="javascript:$('.collection-box').attr('value', '@collection.name')"
+								class="collection-selection"
+							>
+								@collection.name
+							</a>
+						</li>
+					}
+				</ul>
+			</div>
+			</div>
+			<button class="add-btn btn btn-success header-control">
+				Add To Collection
+			</button>
+			<button class="create-btn btn btn-primary header-control">
+				Create New Collection
+			</button>
+			<button class="delete-btn btn btn-danger header-control">
+				Delete Collection
+			</button>
+		</form>
+		<div style="clear: both">
+		</div>
+	} else {
+		<form class="header-controls form-inline">
+			<select class="header-control collection-box">
+				@for(collection <- Collection.all) {
+					<option value="@collection.name">@collection.name</option>
+				}
+			</select>
+			<button class="add-btn btn btn-success header-btn">
+				Add to Collection
+			</button>
+		</form>
+		<h1>Add Photos to Collections</h1>
+	}
 </div>
 @defining(Image.all(userId=user.id).filter(_.pending)) { pendingImages =>
 	@if(pendingImages nonEmpty) {
 		<div class="well container">
-		<form action="/api/collections/new" method="post" id="selection_form">
+		<form action="#" id="selection_form">
 			<ul>
 			@for(image <- Image.all(userId=user.id).filter(_.pending)) {
 				<li>
@@ -39,6 +87,7 @@
 				</li>
 			}
 			</ul>
+		</form>
 		</div>
 	} else {
 		<div class="container center well">
@@ -46,7 +95,24 @@
 		</div>
 	}
 }
+
+
 </div>
+<form action="/api/collections/addImages" method="post" id="add_form">
+	<input type="hidden" name="collectionName">
+	<input type="hidden" name="imageIds">
+	<input type="submit" class="hidden">
+</form>
+
+<form action="/api/collections/new" method="post" id="create_form">
+	<input type="hidden" name="name">
+	<input type="submit" class="hidden">
+</form>
+
+<form action="/api/collections/delete" method="post" id="delete_form">
+	<input type="hidden" name="name">
+	<input type="submit" class="hidden">
+</form>
 </body>
 </html>
 

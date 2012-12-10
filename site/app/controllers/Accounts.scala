@@ -44,7 +44,7 @@ object Accounts extends Controller with LoginLogout with Auth with AuthConfigImp
 				case value: JsArray => value(0).as[String]
 				case _ => "Bad data"
 			}
-			val flashSession= flash + ("message" -> error) + ("styleClass" -> "red")
+			val flashSession = flash + ("message" -> error) + ("styleClass" -> "red")
 
 			//Remove password field from form (security)
 			val formValues = form.data - "password"

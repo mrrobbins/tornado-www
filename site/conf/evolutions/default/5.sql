@@ -2,13 +2,10 @@
 
 CREATE TABLE collection (
 	id BIGINT PRIMARY KEY AUTO_INCREMENT,
-	time_created INTEGER NOT NULL, -- UNIX time
-	gps_address VARCHAR(1024) NOT NULL,
-	address VARCHAR(1024) NOT NULL,
-	location_description VARCHAR(1024) NOT NULL,
-	notes VARCHAR(10240) NOT NULL,
-	damage_indicator INTEGER NOT NULL,
-	degree_of_damage INTEGER NOT NULL
+	time_created INTEGER NOT NULL, -- Milliseconds since the epoch
+	name VARCHAR(50) UNIQUE NOT NULL,
+	creator BIGINT NOT NULL,
+	FOREIGN KEY (creator) REFERENCES user (id)
 );
 
 # --- !Downs

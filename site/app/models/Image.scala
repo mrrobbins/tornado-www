@@ -263,14 +263,18 @@ object Image {
 		image
 	}
 
-	def addToCollection(imageId: Long, collectionId: Long, fromCollectionId: Option[Long] = None)(implicit trans: Connection = null): Unit = ensuringTransaction { implicit trans =>
+	def addToCollection(
+		imageId: Long,
+		collectionId: Long
+	)(implicit
+		trans: Connection = null
+	) = ensuringTransaction { implicit trans =>
 
-		val maybePending = Image.pending(imageId)
+		val image = Image(imageId)
 
-		if (maybePending.isDefined) {
-			val pending = maybePending.get
+		if (image.pending) {
 
-			val deletePending = SQL(
+			val deleteFromPending = SQL(
 				"""
 					DELETE FROM pending_image WHERE image_id = {imageId} 
 				"""
@@ -278,11 +282,11 @@ object Image {
 				"imageId" -> imageId
 			)
 
-			if (1 != deletePending.executeUpdate()) {
+			if (1 != deleteFromPending.executeUpdate()) {
 				throw new SQLException("Failed to delete pending image")
 			}
 
-			val addImage = SQL(
+			val addToCollection = SQL(
 				"""
 					INSERT INTO collection_image 
 						(collection_id, image_id, notes, damage_indicator, degree_of_damage) 
@@ -290,53 +294,34 @@ object Image {
 				""").on(
 				"collectionId" -> collectionId,
 				"imageId" -> imageId,
-				"notes" -> pending.notes,
-				"di" -> pending.indicator,
-				"dod" -> pending.degree
+				"notes" -> image.notes,
+				"di" -> image.indicator,
+				"dod" -> image.degree
 			)
 
-			if (1 != addImage.executeUpdate()) {
+			if (1 != addToCollection.executeUpdate()) {
 				throw new SQLException("Failed to add image to collection")
 			}
 		} else {
-			val collections = Image.collections(imageId)
-				
-			val (notes, di, dod) = if (fromCollectionId.isDefined) {
-				val damageProperties = SQL(
-					"""
-						SELECT notes, damage_indicator, degree_of_damage FROM collection_image WHERE collection_id = {collectionId} AND image_id = {imageId}
-					"""
-				).on(
-					"collectionId" -> fromCollectionId.get,
-					"image_id" -> imageId
-				)
-				val head = damageProperties().headOption
-				head.map { row => 
-					import row.get
-					(
-						get[String]("notes"),
-						get[Int]("damage_indicator"), 
-						get[Int]("degree_of_damage")
-					)
-				}.getOrElse(("", -1, -1))
-			} else {
-				("", -1, -1)	
-			}
-
-			val addImage = SQL(
-				"""
-					INSERT INTO collection_image 
-						(collection_id, image_id, notes, damage_indicator, degree_of_damage) 
-						VALUES ({collectionId}, {imageId}, {notes}, {di}, {dod})
-				""").on(
-				"collectionId" -> collectionId,
-				"imageId" -> imageId,
-				"notes" -> notes,
-				"di" -> di,
-				"dod" -> dod 
-			)
+			throw new SQLException("Image is not pending")
 		}
+	}
 
+	def moveToCollection(
+		imageId: Long,
+		collectionId: Long
+	)(implicit
+		trans: Connection = null
+	) = ensuringTransaction { implicit trans => 
+		val moveQuery = SQL(
+			"""
+				UPDATE collection_image SET collection_id={collection_id}
+				WHERE image_id={image_id}
+			"""
+		)
+
+		if (moveQuery.executeUpdate() != 1)
+			throw new SQLException("Image not currently in single collection")
 	}
 
 	def pending(imageId: Long)(implicit conn: Connection = null): Option[Image] = ensuringConnection { implicit conn =>

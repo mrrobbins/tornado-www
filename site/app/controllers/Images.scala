@@ -15,18 +15,18 @@ import java.util.Date
 import java.text.DateFormat
 import java.util.Locale
 import data.Forms._
+import java.sql.SQLException
+import models.ModelHelpers.ensuringTransaction
 
 object Images extends Controller with Auth with AuthConfigImpl {
 
-	def queuePage =
-		authorizedAction(NormalUser) { implicit user => implicit request =>
+	def queuePage = authorizedAction(NormalUser) { implicit user => implicit request =>
 			Ok(views.html.photoQueue())	
-		}
+	}
 
-	def uploadPage =
-		authorizedAction(NormalUser) { implicit user => implicit request =>
+	def uploadPage = authorizedAction(NormalUser) { implicit user => implicit request =>
 			Ok(views.html.upload()) 
-		}	
+	}	
 
 	def edit(imageId: Long) =
 		optionalUserAction { implicit maybeUser => implicit request =>
@@ -119,7 +119,7 @@ object Images extends Controller with Auth with AuthConfigImpl {
 		notes: String
 	)
 
-	val editImageForm = Form (
+	val editImageForm = Form(
 		mapping(
 			"capture_time" -> optional(text),
 			"upload_time" -> text,
@@ -135,18 +135,65 @@ object Images extends Controller with Auth with AuthConfigImpl {
 
 	object Api {
 
-		def addToCollection(
-			imageId: Long,
-			collectionId: Long,
-			fromCollectionId: Option[Long]
-		) = authorizedAction(NormalUser) { implicit user => implicit request => 
-			Async { Akka.future {
-				Ok(Image.addToCollection(imageId, collectionId).toString)
-			} }
+		val addToCollectionForm = Form(
+			tuple("collectionName" -> text, "imageIds" -> text)
+		)
+		def addToCollection() = authorizedAction(NormalUser) { implicit user => implicit request => 
+
+			def success(values: (String, String)) = try {
+				values match { case (collectionName, idsString) =>
+					ensuringTransaction("default") { implicit trans =>
+						val collection = Collection.withName(collectionName)
+						val imageIds = Json.parse(idsString).as[Seq[String]].map(_.toLong)
+						imageIds.foreach { imageId =>
+							val image = Image(imageId)
+							if (image.user != user.id && !user.isAdmin) throw new SQLException("Not your image")
+							Image.addToCollection(imageId, collection.id)
+						}
+					}
+					Redirect("/photoqueue").flashing("message" -> "Successfully added to collection")
+				}
+			} catch {
+				case s: SQLException =>
+					BadRequest("Bad Request")
+			}
+
+			def failure(form: Form[(String, String)]) = BadRequest("Bad Request")
+
+			addToCollectionForm.bindFromRequest().fold(failure, success)
+
 		}
 
-		def createCollection = Action(parse.urlFormEncoded) { request =>
-				Redirect("/photoqueue")
+		val createCollectionForm = Form("name" -> text)
+
+		def createCollection = authorizedAction(AdminUser) { implicit user => implicit request =>
+
+			def success(name: String) = try {
+				val template = CollectionTemplate(name, user.id)
+				Collection.insert(template)
+				Redirect("/photoqueue").flashing("message" -> "Creation Successful")
+			} catch {
+				case e: SQLException => InternalServerError("Unable to create collection")
+			}
+
+			def failure(form: Form[String]) = BadRequest("Bad request")
+
+			createCollectionForm.bindFromRequest().fold(failure, success)
+		}
+
+		val deleteCollectionForm = Form("name" -> text)
+
+		def deleteCollection() = authorizedAction(AdminUser) { implicit user => implicit request =>
+			def success(name: String) = try {
+				Collection.deleteByName(name)
+				Redirect("/photoqueue").flashing("message" -> "Deletion Successful")
+			} catch {
+				case e: SQLException => InternalServerError("Unable to delete collection")
+			}
+
+			def failure(form: Form[String]) = BadRequest("Bad request")
+
+			deleteCollectionForm.bindFromRequest().fold(failure, success)
 		}
 
 		def delete(id: Long) = authorizedAction(NormalUser) { implicit user => implicit request => 
