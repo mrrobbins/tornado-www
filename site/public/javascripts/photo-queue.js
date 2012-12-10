@@ -33,15 +33,17 @@ $(window).load(function() {
 	});
 
 	$('.delete-btn').click(function() {
-		var collection = $('.collection-box').attr('value');
-		var form = $('form#delete_form');
-		form.find('input[name=name]').attr('value', collection);
+		if (confirm('Warning! This will delete all images in the collection')) {
+			var collection = $('.collection-box').attr('value');
+			var form = $('form#delete_form');
+			form.find('input[name=name]').attr('value', collection);
 
-		if (window.sessionStorage) {
-			sessionStorage.removeItem('prevCollection');
+			if (window.sessionStorage) {
+				sessionStorage.removeItem('prevCollection');
+			}
+
+			form.submit();
 		}
-
-		form.submit();
 		return false;
 	});
 
