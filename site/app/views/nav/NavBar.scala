@@ -10,6 +10,7 @@ object NavBar {
 	object Map extends NavItem("map", "/map")
 	object PhotoQueue extends NavItem("photo queue", "/photoqueue")
 	object PhotoUpload extends NavItem("upload", "/upload")
+	object About extends NavItem("about", "/about")
 	object Login extends NavItem("login", "/login")
 
 	val headerItems = Seq(Map, PhotoUpload, PhotoQueue)

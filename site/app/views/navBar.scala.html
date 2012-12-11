@@ -30,6 +30,7 @@
 					<input type="text" id="search_box" class="search-query span2" placeholder="" />
 			</form>
 		}
+
 		<ul class="nav">
 			@if(searchText.isDefined) {
 				<li class="divider-vertical"></li>
@@ -41,6 +42,7 @@
 		@optUser.maybeUser.map { user => 
 			<form id="logoutform" action="/logout" method="post">
 				<ul class="nav pull-right">
+					@item(NavBar.About)
 					<li>
 							<a href="javascript:document.getElementById('logoutform').submit()">@user.email</a>
 					</li>
@@ -48,6 +50,7 @@
 			</form>
 		}.getOrElse {
 			<ul class="nav pull-right">
+			@item(NavBar.About)
 			@item(NavBar.Login)
 			</ul>
 		}

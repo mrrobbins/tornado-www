@@ -37,6 +37,8 @@ GET   /signup                        controllers.Accounts.signup
 
 POST  /signup                        controllers.Accounts.signupSubmit
 
+GET		/about												 controllers.About.page
+
 GET   /data/*path                    controllers.FileServer.serve(path: String)
 
 POST  /api/images/upload             controllers.Images.Api.uploadImage
