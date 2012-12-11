@@ -208,10 +208,15 @@ object Images extends Controller with Auth with AuthConfigImpl {
 			Async {
 				Akka.future {
 					Image.delete(id)
-					Redirect("/photoqueue").flashing("message" -> "Image was deleted")
+					session.get("lastEditor").map { lastEditor =>
+						Redirect(lastEditor)
+					} getOrElse {
+						Redirect("/map").flashing("message" -> "Delete successful")
+					}
 				} recover {
-					case _: Exception =>
-						Redirect("/photoqueue").flashing("message" -> "Error deleting photo")
+					case e =>
+						e.printStackTrace()
+						Redirect("/map").flashing("message" -> "Error deleting photo")
 				}
 			}
 		}

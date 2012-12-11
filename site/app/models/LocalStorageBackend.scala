@@ -16,14 +16,15 @@ class LocalStorageBackend(c: Configuration) extends StorageBackend {
 		)
 	}
 
+	val prefix = new File(path + "/storage")
+
 	def store(
 		bucket: String,
 		file: File,
 		contentType: Option[String]=None,
 		name: Option[String]=None
 	): String = {
-		val prefix = path + "/storage/" + bucket + "/"
-		val prefixFile = new File(prefix)
+		val prefixFile = new File(prefix, bucket)
 		if (!prefixFile.exists()) prefixFile.mkdirs()
 		val outputFile = name.map(n => new File(prefixFile, n)).getOrElse {
 			val fileExt = contentType.flatMap(Extensions.get).getOrElse {
@@ -52,8 +53,9 @@ class LocalStorageBackend(c: Configuration) extends StorageBackend {
 		"/data/storage/" + bucket + "/" + key
 	}
 
-	def fetch(bucket: String, key: String): File = {
-		new File(path + "/" + bucket + "/" + key)
+	def delete(bucket: String, key: String): Boolean = {
+		val file = new File(prefix, bucket + "/" + key)
+		file.delete()
 	}
 }
 

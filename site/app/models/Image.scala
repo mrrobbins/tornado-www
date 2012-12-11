@@ -6,6 +6,7 @@ import play.api.Play.current
 import java.sql._
 import anorm._
 import play.api.db.DB
+import java.io.IOException
 
 case class Image(
 	id: Long,
@@ -36,7 +37,6 @@ case class Image(
 			}
 		} else None
 	}
-
 }
 
 case class ImageTemplate(
@@ -113,7 +113,7 @@ object Image {
 					collectionId=collectionId,
 					pending=collectionId.isEmpty
 				)
-			case _ => throw new SQLException("Id does not refer to a single image")
+			case _ => throw new SQLException("Bad id")
 		}
 	}
 
@@ -212,8 +212,14 @@ object Image {
 	}
 
 	def delete(id: Long)(implicit trans: Connection = null) = ensuringTransaction { implicit trans =>
-
 		val image = Image(id)
+		
+		if(
+			!StorageBackend().delete("thumbnails", image.path) || 
+			!StorageBackend().delete("images", image.path) 
+		){
+			throw new IOException("Image not deleted from storage")
+		}
 		
 		if (image.pending){
 			val pendingImageDelete = SQL(

@@ -18,7 +18,7 @@ trait StorageBackend {
 		name: Option[String]=None
 	): String
 	def lookup(bucket: String, key: String): String
-
+	def delete(bucket: String, key: String): Boolean
 }
 
 object StorageBackend {
