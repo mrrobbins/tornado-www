@@ -238,7 +238,7 @@ object Images extends Controller with Auth with AuthConfigImpl {
 					// store with metadata
 					try {
 						val tmpFile = File.createTempFile("img_thumb", ".jpg")
-						ImageThumbnailer.createThumbnail(file.ref.file, tmpFile)
+						ImageThumbnailer.createThumbnail(file.ref.file, tmpFile, 300)
 						val path = StorageBackend().store("images", file.ref.file, file.contentType)
 						StorageBackend().store("thumbnails", tmpFile, Some("image/jpg"), Some(path))
 						val template: ImageTemplate = ImageTemplate(
